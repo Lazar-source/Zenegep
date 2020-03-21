@@ -12,10 +12,11 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="190dp"
-        android:layout_marginRight="190dp"
-        android:layout_marginBottom="366dp"
-        android:text="TextView"/>
+        android:layout_marginEnd="177dp"
+        android:layout_marginRight="177dp"
+        android:layout_marginBottom="425dp"
+        android:text="TextView" />
+
     <Button
         android:id="@+id/serverbutton"
         android:layout_width="wrap_content"
@@ -27,4 +28,19 @@
         android:layout_marginRight="164dp"
         android:layout_marginBottom="544dp"
         android:text="Indítás"/>
+
+    <Button
+        android:id="@+id/btnPlayVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="93dp"
+        android:layout_marginEnd="153dp"
+        android:layout_marginRight="153dp"
+        android:layout_marginBottom="235dp"
+        android:text="@string/play_video"
+        android:textStyle="bold|italic" />
+
 </RelativeLayout>

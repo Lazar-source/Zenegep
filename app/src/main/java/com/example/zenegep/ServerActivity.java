@@ -1,5 +1,6 @@
 package com.example.zenegep;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -20,7 +21,7 @@ public class ServerActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
-        Button button = (Button) findViewById(R.id.serverbutton);
+        Button button = findViewById(R.id.serverbutton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -28,6 +29,18 @@ public class ServerActivity extends AppCompatActivity{
                 conn.execute();
             }
         });
+        Button btnSingle =  findViewById(R.id.btnPlayVideo);
+        btnSingle.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), YoutubeActivity.class);
+                if (intent != null) {
+                    startActivity(intent);
+                }
+
+            }
+        }
+        );
     }
 
     class Connection extends AsyncTask<Void, Void, Void> {
@@ -50,7 +63,16 @@ public class ServerActivity extends AppCompatActivity{
 
 
     private static ServerSocket server;
-    private static int port = 9876;
+
+    static {
+        try {
+            server = new ServerSocket(8888);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static int port = 8888;
 
     public void server_elinditas() throws IOException, ClassNotFoundException {
         server = new ServerSocket(port);

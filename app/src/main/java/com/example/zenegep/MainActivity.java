@@ -9,9 +9,6 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
     public void openclient(){
-
-
-
         Intent intent= new Intent(getApplicationContext(),ClientActivity.class);
         startActivity(intent);
     }
@@ -27,14 +24,16 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openclient();
+                Intent intent= new Intent(getApplicationContext(),ClientActivity.class);
+                startActivity(intent);
             }
         });
         button = (Button) findViewById(R.id.button_szerver);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openszerver();
+                Intent intent = new Intent(getApplicationContext(), ServerActivity.class);
+                startActivity(intent);
             }
         });
     }
