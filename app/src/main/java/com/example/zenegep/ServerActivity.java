@@ -1,105 +1,175 @@
 package com.example.zenegep;
 
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.util.Log;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.Enumeration;
 
-public class ServerActivity extends AppCompatActivity{
-    Connection conn;
-    private static final String TAG = ServerActivity.class.getSimpleName();
+import android.os.Bundle;
+import android.app.Activity;
+import android.widget.TextView;
+
+public class ServerActivity extends Activity{
+    public TextView info;
+    public TextView msg;
+    String message = "";
+    ServerSocket serverSocket;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_server);
-        Button button = findViewById(R.id.serverbutton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                conn = new Connection();
-                conn.execute();
+        setContentView(R.layout.activity_main);
+        info = findViewById(R.id.info);
+        TextView infoip = findViewById(R.id.infoip);
+        msg =  findViewById(R.id.msg);
+        String ipadress=getIpAddress();
+        infoip.setText(ipadress);
+
+        Thread socketServerThread = new Thread(new SocketServerThread());
+        socketServerThread.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-        });
-        Button btnSingle =  findViewById(R.id.btnPlayVideo);
-        btnSingle.setOnClickListener( new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), YoutubeActivity.class);
-                if (intent != null) {
-                    startActivity(intent);
+        }
+    }
+
+    private class SocketServerThread extends Thread {
+
+        static final int SocketServerPORT = 8080;
+        int count = 0;
+
+        @Override
+        public void run() {
+            try {
+                serverSocket = new ServerSocket(SocketServerPORT);
+                ServerActivity.this.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        info.setText("I'm waiting here: "
+                                + serverSocket.getLocalPort());
+                    }
+                });
+
+                while (true) {
+                    Socket socket = serverSocket.accept();
+                    count++;
+                    message += "#" + count + " from " + socket.getInetAddress()
+                            + ":" + socket.getPort() + "\n";
+
+                    ServerActivity.this.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            msg.setText(message);
+                        }
+                    });
+
+                    SocketServerReplyThread socketServerReplyThread = new SocketServerReplyThread(
+                            socket, count);
+                    socketServerReplyThread.run();
+
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private class SocketServerReplyThread extends Thread {
+
+        private Socket hostThreadSocket;
+        int cnt;
+
+        SocketServerReplyThread(Socket socket, int c) {
+            hostThreadSocket = socket;
+            cnt = c;
+        }
+
+        @Override
+        public void run() {
+            OutputStream outputStream;
+            String msgReply = "Hello from Android, you are #" + cnt;
+
+            try {
+                outputStream = hostThreadSocket.getOutputStream();
+                PrintStream printStream = new PrintStream(outputStream);
+                printStream.print(msgReply);
+                printStream.close();
+
+                message += "replayed: " + msgReply + "\n";
+
+               ServerActivity.this.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        msg.setText(message);
+                    }
+                });
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                message += "Something wrong! " + e.toString() + "\n";
+            }
+
+            ServerActivity.this.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    msg.setText(message);
+                }
+            });
+        }
+
+    }
+
+    private String getIpAddress() {
+        String ip = "";
+        try {
+            Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface
+                    .getNetworkInterfaces();
+            while (enumNetworkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = enumNetworkInterfaces
+                        .nextElement();
+                Enumeration<InetAddress> enumInetAddress = networkInterface
+                        .getInetAddresses();
+                while (enumInetAddress.hasMoreElements()) {
+                    InetAddress inetAddress = enumInetAddress.nextElement();
+
+                    if (inetAddress.isSiteLocalAddress()) {
+                        ip += "SiteLocalAddress: "
+                                + inetAddress.getHostAddress() + "\n";
+                    }
+
                 }
 
             }
-        }
-        );
-    }
 
-    class Connection extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                server_elinditas();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-
-
-    }
-
-
-
-    private static ServerSocket server;
-
-    static {
-        try {
-            server = new ServerSocket(8888);
-        } catch (IOException e) {
+        } catch (SocketException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
+            ip += "Something Wrong! " + e.toString() + "\n";
         }
-    }
 
-    private static int port = 8888;
-
-    public void server_elinditas() throws IOException, ClassNotFoundException {
-        server = new ServerSocket(port);
-        while (true) {
-            //final TextView simpleTextView=(TextView) findViewById(R.id.servertextview);
-            //simpleTextView.setText("Waiting for the client request");
-            Log.d(TAG,"Waiting for the client request");
-           // System.out.println("Waiting for the client request");
-            Socket socket = server.accept();
-            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-            String message = (String) ois.readObject();
-            //simpleTextView.setText("Message Received: "+message);
-            Log.d(TAG,"Message received: "+message);
-           // System.out.println("Message Received: " + message);
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-           // simpleTextView.setText("Hi Client " + message);
-            Log.d(TAG,"Hi Client"+message);
-            oos.writeObject("Hi Client " + message);
-            ois.close();
-            oos.close();
-            socket.close();
-            if (message.equalsIgnoreCase("exit")) break;
-        }
-        //final TextView simpleTextView=(TextView) findViewById(R.id.servertextview);
-        //simpleTextView.setText("Shutting down Socket server!!");
-        Log.d(TAG,"Shutting down Socket server!!");
-       // System.out.println("Shutting down Socket server!!");
-        server.close();
+        return ip;
     }
 }
+
