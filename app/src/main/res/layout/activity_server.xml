@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:autoLink="web"
-        android:text="@string/server_oldal"
+        android:text="http://android-er.blogspot.com/"
         android:textStyle="bold" />
 
     <TextView

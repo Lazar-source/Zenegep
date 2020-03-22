@@ -11,4 +11,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="play_video">Play Video</string>
     <string name="server_oldal">Server oldal</string>
+    <string name="szerver_ip_c_me">Szerver IP címe</string>
 </resources>

@@ -8,14 +8,14 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-    public void openclient(){
+   /* public void openclient(){
         Intent intent= new Intent(getApplicationContext(),ClientActivity.class);
         startActivity(intent);
     }
     public void openszerver() {
         Intent intent = new Intent(getApplicationContext(), ServerActivity.class);
         startActivity(intent);
-    }
+    }*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

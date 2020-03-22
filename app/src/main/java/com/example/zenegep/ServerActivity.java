@@ -1,8 +1,8 @@
 package com.example.zenegep;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -15,8 +15,7 @@ import android.app.Activity;
 import android.widget.TextView;
 
 public class ServerActivity extends Activity{
-    public TextView info;
-    public TextView msg;
+    TextView info, infoip, msg;
     String message = "";
     ServerSocket serverSocket;
 
@@ -25,10 +24,10 @@ public class ServerActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         info = findViewById(R.id.info);
-        TextView infoip = findViewById(R.id.infoip);
-        msg =  findViewById(R.id.msg);
-        String ipadress=getIpAddress();
-        infoip.setText(ipadress);
+        infoip = findViewById(R.id.infoip);
+        msg = findViewById(R.id.msg);
+
+        infoip.setText(getIpAddress());
 
         Thread socketServerThread = new Thread(new SocketServerThread());
         socketServerThread.start();
@@ -42,7 +41,7 @@ public class ServerActivity extends Activity{
             try {
                 serverSocket.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
             }
         }
@@ -55,6 +54,10 @@ public class ServerActivity extends Activity{
 
         @Override
         public void run() {
+            Socket socket = null;
+            DataInputStream dataInputStream = null;
+            DataOutputStream dataOutputStream = null;
+
             try {
                 serverSocket = new ServerSocket(SocketServerPORT);
                 ServerActivity.this.runOnUiThread(new Runnable() {
@@ -67,10 +70,21 @@ public class ServerActivity extends Activity{
                 });
 
                 while (true) {
-                    Socket socket = serverSocket.accept();
+                    socket = serverSocket.accept();
+                    dataInputStream = new DataInputStream(
+                            socket.getInputStream());
+                    dataOutputStream = new DataOutputStream(
+                            socket.getOutputStream());
+
+                    String messageFromClient = "";
+
+                    //If no message sent from client, this code will block the program
+                    messageFromClient = dataInputStream.readUTF();
+
                     count++;
                     message += "#" + count + " from " + socket.getInetAddress()
-                            + ":" + socket.getPort() + "\n";
+                            + ":" + socket.getPort() + "\n"
+                            + "Msg from client: " + messageFromClient + "\n";
 
                     ServerActivity.this.runOnUiThread(new Runnable() {
 
@@ -80,63 +94,50 @@ public class ServerActivity extends Activity{
                         }
                     });
 
-                    SocketServerReplyThread socketServerReplyThread = new SocketServerReplyThread(
-                            socket, count);
-                    socketServerReplyThread.run();
+                    String msgReply = "Hello from Android, you are #" + count;
+                    dataOutputStream.writeUTF(msgReply);
 
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
-            }
-        }
-
-    }
-
-    private class SocketServerReplyThread extends Thread {
-
-        private Socket hostThreadSocket;
-        int cnt;
-
-        SocketServerReplyThread(Socket socket, int c) {
-            hostThreadSocket = socket;
-            cnt = c;
-        }
-
-        @Override
-        public void run() {
-            OutputStream outputStream;
-            String msgReply = "Hello from Android, you are #" + cnt;
-
-            try {
-                outputStream = hostThreadSocket.getOutputStream();
-                PrintStream printStream = new PrintStream(outputStream);
-                printStream.print(msgReply);
-                printStream.close();
-
-                message += "replayed: " + msgReply + "\n";
-
-               ServerActivity.this.runOnUiThread(new Runnable() {
+                final String errMsg = e.toString();
+                ServerActivity.this.runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
-                        msg.setText(message);
+                        msg.setText(errMsg);
                     }
                 });
 
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                message += "Something wrong! " + e.toString() + "\n";
-            }
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
 
-            ServerActivity.this.runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    msg.setText(message);
+                        e.printStackTrace();
+                    }
                 }
-            });
+
+                if (dataInputStream != null) {
+                    try {
+                        dataInputStream.close();
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+                    }
+                }
+
+                if (dataOutputStream != null) {
+                    try {
+                        dataOutputStream.close();
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
     }
@@ -164,7 +165,7 @@ public class ServerActivity extends Activity{
             }
 
         } catch (SocketException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
             ip += "Something Wrong! " + e.toString() + "\n";
         }

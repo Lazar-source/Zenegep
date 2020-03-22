@@ -1,81 +1,150 @@
 package com.example.zenegep;
 
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.util.Log;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class ClientActivity extends AppCompatActivity {
-    private static final String TAG = ServerActivity.class.getSimpleName();
-    Connection conn;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.app.Activity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class ClientActivity extends Activity {
+    TextView textResponse;
+    EditText editTextAddress, editTextPort;
+    Button buttonConnect, buttonClear;
+
+    EditText welcomeMsg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_client);
-        Button button = findViewById(R.id.clientbutton);
-        button.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.activity_main);
+
+        editTextAddress =  findViewById(R.id.address);
+        editTextPort =  findViewById(R.id.port);
+        buttonConnect =  findViewById(R.id.connect);
+        buttonClear = findViewById(R.id.clear);
+        textResponse =  findViewById(R.id.response);
+
+        welcomeMsg = findViewById(R.id.welcomemsg);
+
+        buttonConnect.setOnClickListener(buttonConnectOnClickListener);
+
+        buttonClear.setOnClickListener(new OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                conn = new Connection();
-                conn.execute();
+                textResponse.setText("");
             }
         });
     }
-    class Connection extends AsyncTask<Void, Void,Void>{
+
+    OnClickListener buttonConnectOnClickListener = new OnClickListener() {
+
         @Override
-        protected Void doInBackground(Void... params){
+        public void onClick(View arg0) {
+
+            String tMsg = welcomeMsg.getText().toString();
+            if(tMsg.equals("")){
+                tMsg = null;
+                Toast.makeText(ClientActivity.this, "No Welcome Msg sent", Toast.LENGTH_SHORT).show();
+            }
+
+            MyClientTask myClientTask = new MyClientTask(editTextAddress
+                    .getText().toString(), Integer.parseInt(editTextPort
+                    .getText().toString()),
+                    tMsg);
+            myClientTask.execute();
+        }
+    };
+
+    public class MyClientTask extends AsyncTask<Void, Void, Void> {
+
+        String dstAddress;
+        int dstPort;
+        String response = "";
+        String msgToServer;
+
+        MyClientTask(String addr, int port, String msgTo) {
+            dstAddress = addr;
+            dstPort = port;
+            msgToServer = msgTo;
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            Socket socket = null;
+            DataOutputStream dataOutputStream = null;
+            DataInputStream dataInputStream = null;
+
             try {
-                client_elinditas();
+                socket = new Socket(dstAddress, dstPort);
+                dataOutputStream = new DataOutputStream(
+                        socket.getOutputStream());
+                dataInputStream = new DataInputStream(socket.getInputStream());
+
+                if(msgToServer != null){
+                    dataOutputStream.writeUTF(msgToServer);
+                }
+
+                response = dataInputStream.readUTF();
+
+            } catch (UnknownHostException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                response = "UnknownHostException: " + e.toString();
             } catch (IOException e) {
+                // TODO Auto-generated catch block
                 e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                response = "IOException: " + e.toString();
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+
+                if (dataOutputStream != null) {
+                    try {
+                        dataOutputStream.close();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+
+                if (dataInputStream != null) {
+                    try {
+                        dataInputStream.close();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
             }
             return null;
         }
-    }
 
-    public void client_elinditas() throws IOException, ClassNotFoundException, InterruptedException{
-        //get the localhost IP address, if server is running on some other IP, you need to use that
-        final TextView simpleTextView= findViewById(R.id.clienttextview);
-
-        //InetAddress host = InetAddress.getLocalHost();
-        Socket socket;
-        ObjectOutputStream oos = null;
-        ObjectInputStream ois;
-        for(int i=0; i<5;i++){
-            //establish socket connection to server
-            socket = new Socket("localhost", 8888);
-            //write to socket using ObjectOutputStream
-            oos = new ObjectOutputStream(socket.getOutputStream());
-            //simpleTextView.setText("Sending request to Socket Server");
-            Log.d(TAG, "Sending request to Socket Server");
-            //System.out.println("Sending request to Socket Server");
-            if(i==4)oos.writeObject("exit");
-            else oos.writeObject(""+i);
-            //read the server response message
-            ois = new ObjectInputStream(socket.getInputStream());
-            String message = (String) ois.readObject();
-            //simpleTextView.setText("Message: "+message);
-            Log.d(TAG,"Message: "+message);
-            //System.out.println("Message: " + message);
-            //close resources
-            ois.close();
-            oos.close();
-            Thread.sleep(100);
+        @Override
+        protected void onPostExecute(Void result) {
+            textResponse.setText(response);
+            super.onPostExecute(result);
         }
+
     }
+
 }
