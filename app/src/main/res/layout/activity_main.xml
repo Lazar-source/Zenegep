@@ -8,25 +8,7 @@
 
     <Button
         android:id="@+id/button_szerver"
-        android:layout_width="117dp"
-        android:layout_height="105dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="312dp"
-        android:layout_marginEnd="227dp"
-        android:layout_marginRight="227dp"
-        android:layout_marginBottom="313dp"
         android:background="@drawable/server"
-        android:lineSpacingExtra="8sp"
-        android:text="Szerver"
-        android:textIsSelectable="false"
-        android:textSize="18sp"
-        android:typeface="normal" />
-
-    <Button
-        android:id="@+id/button_kliens"
         android:layout_width="138dp"
         android:layout_height="120dp"
         android:layout_alignParentEnd="true"
@@ -35,6 +17,20 @@
         android:layout_marginEnd="55dp"
         android:layout_marginRight="55dp"
         android:layout_marginBottom="306dp"
+        android:gravity="bottom|center"
+        android:text="Szerver"
+        />
+
+    <Button
+        android:id="@+id/button_kliens"
+        android:layout_width="138dp"
+        android:layout_height="120dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="223dp"
+        android:layout_marginRight="223dp"
+        android:layout_marginBottom="307dp"
         android:background="@drawable/kliens"
         android:gravity="bottom|center"
         android:text="Kliens"

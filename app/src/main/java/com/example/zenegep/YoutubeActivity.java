@@ -18,7 +18,7 @@ public class YoutubeActivity extends YouTubeBaseActivity
 implements YouTubePlayer.OnInitializedListener
 {
     private String GOOGLE_API_KEY = "AIzaSyBNk8C_vUyaMjIvPb6RnekVZ2i6p0xEz7c";
-    private String YOUTUBE_VIDEO_ID = "mbRbzbGTNfk";
+    private String YOUTUBE_VIDEO_ID = "I2dJTE6NjWQ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

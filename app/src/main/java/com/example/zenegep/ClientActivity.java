@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ClientActivity extends Activity {
+    DatabaseHelper myDb;
     TextView textResponse;
     EditText editTextAddress, editTextPort;
     Button buttonConnect, buttonClear;
@@ -28,18 +29,15 @@ public class ClientActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_client);
 
         editTextAddress =  findViewById(R.id.address);
         editTextPort =  findViewById(R.id.port);
         buttonConnect =  findViewById(R.id.connect);
         buttonClear = findViewById(R.id.clear);
         textResponse =  findViewById(R.id.response);
-
         welcomeMsg = findViewById(R.id.welcomemsg);
-
         buttonConnect.setOnClickListener(buttonConnectOnClickListener);
-
         buttonClear.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -47,6 +45,7 @@ public class ClientActivity extends Activity {
                 textResponse.setText("");
             }
         });
+        myDb=new DatabaseHelper(this);
     }
 
     OnClickListener buttonConnectOnClickListener = new OnClickListener() {
@@ -105,7 +104,7 @@ public class ClientActivity extends Activity {
                 e.printStackTrace();
                 response = "UnknownHostException: " + e.toString();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
                 response = "IOException: " + e.toString();
             } finally {
@@ -113,7 +112,7 @@ public class ClientActivity extends Activity {
                     try {
                         socket.close();
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+
                         e.printStackTrace();
                     }
                 }
@@ -122,7 +121,7 @@ public class ClientActivity extends Activity {
                     try {
                         dataOutputStream.close();
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+
                         e.printStackTrace();
                     }
                 }
@@ -131,7 +130,7 @@ public class ClientActivity extends Activity {
                     try {
                         dataInputStream.close();
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+
                         e.printStackTrace();
                     }
                 }
