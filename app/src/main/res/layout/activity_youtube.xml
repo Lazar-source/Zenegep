@@ -20,14 +20,34 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_youtube" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+    <include
+        layout="@layout/content_youtube"
+         />
+    <TextView
+        android:id="@+id/info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_marginTop="480dp"/>
+    <TextView
+        android:id="@+id/infoip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="470dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="137dp"
+        android:layout_gravity="bottom">
+
+
+        <TextView
+            android:id="@+id/msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </ScrollView>
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

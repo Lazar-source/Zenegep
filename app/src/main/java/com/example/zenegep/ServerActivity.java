@@ -10,8 +10,11 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class ServerActivity extends Activity{
@@ -22,11 +25,18 @@ public class ServerActivity extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_server);
         info = findViewById(R.id.info);
         infoip = findViewById(R.id.infoip);
         msg = findViewById(R.id.msg);
-
+        Button button =  findViewById(R.id.youtube_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent(getApplicationContext(),YoutubeActivity.class);
+                startActivity(intent);
+            }
+        });
         infoip.setText(getIpAddress());
 
         Thread socketServerThread = new Thread(new SocketServerThread());
@@ -47,7 +57,7 @@ public class ServerActivity extends Activity{
         }
     }
 
-    private class SocketServerThread extends Thread {
+    class SocketServerThread extends Thread {
 
         static final int SocketServerPORT = 8080;
         int count = 0;
@@ -63,6 +73,7 @@ public class ServerActivity extends Activity{
                 ServerActivity.this.runOnUiThread(new Runnable() {
 
                     @Override
+
                     public void run() {
                         info.setText("I'm waiting here: "
                                 + serverSocket.getLocalPort());
