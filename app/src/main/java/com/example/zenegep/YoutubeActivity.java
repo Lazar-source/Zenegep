@@ -149,7 +149,8 @@ implements YouTubePlayer.OnInitializedListener {
         @Override
         public void onVideoEnded() {
             Toast.makeText(YoutubeActivity.this, "Thanks for watching!", Toast.LENGTH_LONG).show();
-            YOUTUBE_VIDEO_ID = "IjZ75qI5BOk";
+            YOUTUBE_VIDEO_ID = Music[count];
+            count--;
             youTubePlayer.cueVideo(YOUTUBE_VIDEO_ID);
 
 
