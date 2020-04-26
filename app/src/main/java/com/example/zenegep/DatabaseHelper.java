@@ -7,16 +7,38 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME="Zenegep.db";
     public static final String TABLE_NAME="Zenekeres";
-    public static final String COL_1="VIDEO_ID";
-   /* public static final String COL_2="SENTQUANTITY";
-    public static final String COL_3="CHANNELNAME";
-    public static final String COL_4="TYPEOFMUSIC";*/
-    public static final String COL_5="BEKULDES";
+    public static final String COL_1="BEKULDES";
+    public static final String COL_2="VIDEO_ID";
+    public static final String COL_3="VIDEO_NAME";
+
+
+    private boolean checkIfTableExists(SQLiteDatabase db, String table){
+        //TODO befejezni ezt a szart
+
+        return false;
+    }
+    private void initDatabase(SQLiteDatabase db){
+
+        if(checkIfTableExists(db, TABLE_NAME)) {
+            String database = "CREATE TABLE IF NOT EXISTS Zenekeres"
+                    + "(BEKULDES INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "Video_ID TEXT,"
+                    + "Video_NAME TEXT)";
+            db.execSQL(database);
+
+            String dataToInsert = "INSERT INTO Zenekeres (Video_ID, Video_NAME) VALUES" +
+                    "('fJ9rUzIMcZQ', 'Queen - Bohemian Rhapsody')," +
+                    "('NyOGIsds2C4','Yung Gravy, bbno$ - Whip A Tesla')," +
+                    "('zSISvlwYweI','BSW - $oha nem elég')";
+
+            db.execSQL(dataToInsert);
+        }
+    }
 
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        db.execSQL("CREATE TABLE " +TABLE_NAME+"(BEKULDES INTEGER PRIMARY KEY AUTOINCREMENT,Video_ID TEXT )");
+        initDatabase(db);
     }
 
     @Override
@@ -29,15 +51,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         super(context,DATABASE_NAME, null,1);
         SQLiteDatabase db=this.getWritableDatabase();
     }
-    public boolean insertData(String videoid, int quantity, String channame, String typeofmusic  )
+    public boolean insertData(String videoid, String videoname, String bekuldes)
     {
-        SQLiteDatabase db=this.
-                getWritableDatabase();
+        SQLiteDatabase db=this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-       /* contentValues.put(COL_1,videoid);
-        contentValues.put(COL_2,quantity);
-        contentValues.put(COL_3,channame);
-        contentValues.put(COL_4,typeofmusic);*/
+        contentValues.put(COL_1,videoid);
+        contentValues.put(COL_2,videoname);
+        contentValues.put(COL_3,bekuldes);
+
         long result=db.insert(TABLE_NAME,null,contentValues);
         if(result==-1)
         {
