@@ -3,6 +3,7 @@ package com.example.zenegep;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,9 +41,15 @@ implements YouTubePlayer.OnInitializedListener {
     public static TextView info, infoip, msg;
     private YouTubePlayer youTubePlayer;
     private YouTubePlayerView youTubePlayerView;
-    public static String[] Music= new String[255];
-    public static int count=0;
+    public static String[] Music = new String[255];
+    public static int count = 0;
+    private static final String TAG = "MyActivity";
 
+    public void StartServerThread(){
+       ServerinBackground sb = new ServerinBackground();
+       ServerinBackground.SocketServerThread st = sb.new SocketServerThread();
+       st.start();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +61,11 @@ implements YouTubePlayer.OnInitializedListener {
         infoip = findViewById(R.id.infoip);
         msg = findViewById(R.id.msg);
         infoip.setText(getIpAddress());
-
+        StartServerThread();
     }
 
 
-    public  String getIpAddress() {
+    public String getIpAddress() {
         String ip = "";
         try {
             Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface
@@ -172,7 +179,6 @@ implements YouTubePlayer.OnInitializedListener {
         String message = "";
 
 
-
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -180,6 +186,7 @@ implements YouTubePlayer.OnInitializedListener {
 
             Thread socketServerThread = new Thread(new ServerinBackground.SocketServerThread());
             socketServerThread.start();
+
         }
 
         class SocketServerThread extends Thread {
@@ -193,7 +200,7 @@ implements YouTubePlayer.OnInitializedListener {
                 Socket socket = null;
                 DataInputStream dataInputStream = null;
                 DataOutputStream dataOutputStream = null;
-
+                Log.d(TAG, "fut a szerver");
                 try {
                     serverSocket = new ServerSocket(SocketServerPORT);
                     ServerinBackground.this.runOnUiThread(new Runnable() {

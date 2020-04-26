@@ -107,7 +107,7 @@ public class ClientActivity extends Activity {
 
                 e.printStackTrace();
                 response = "IOException: " + e.toString();
-            } finally {
+            }finally {
                 if (socket != null) {
                     try {
                         socket.close();
