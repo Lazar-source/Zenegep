@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -24,15 +25,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return count>0;
     }
 
-    private void initDatabase(SQLiteDatabase db){
-        if(checkIfTableExists(db, TABLE_NAME)) {
+    public void initDatabase(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(!checkIfTableExists(db, TABLE_NAME)) {
             String databaseCreate = "CREATE TABLE IF NOT EXISTS Zenekeres" +
-                    "(Video_ID TEXT PRIMARY KEY," +
-                    "Video_NAME TEXT," +
-                    "SentCount INTEGER DEFAULT 0," +
-                    "Timestamp TEXT DEFAULT '1970-01-01')";
-            db.execSQL(databaseCreate);
+                    "(Video_ID TEXT PRIMARY KEY, " +
+                    "Video_NAME TEXT, " +
+                    "SentCount INTEGER DEFAULT 0, " +
+                    "Timestamp TEXT DEFAULT '1970-01-01');";
 
+            db.execSQL(databaseCreate);
             //TODO: feltölteni a zenékkel, amit akarunk, hogy benne legyen
             String dataToInsert = "INSERT INTO Zenekeres (Video_ID, Video_NAME) VALUES" +
                     "('fJ9rUzIMcZQ', 'Queen - Bohemian Rhapsody')," +
@@ -47,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        initDatabase(db);
+        initDatabase();
     }
 
     @Override
