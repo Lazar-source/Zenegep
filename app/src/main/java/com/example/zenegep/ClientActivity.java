@@ -7,24 +7,32 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ListView;
 
 public class ClientActivity extends Activity {
     DatabaseHelper myDb;
     TextView textResponse;
     EditText editTextAddress, editTextPort;
     Button buttonConnect, buttonClear;
-
+    ListView listView;
     EditText welcomeMsg;
+    ArrayAdapter adapter;
+    ArrayList<String> list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +54,25 @@ public class ClientActivity extends Activity {
             }
         });
         myDb=new DatabaseHelper(this);
-    }
+
+        //ez van a lista megjelenítéshez, törölendő lesz majd egyszer
+        listView=findViewById(R.id.listview);
+        list = myDb.getMusicList();
+        adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,list);
+        listView.setAdapter(adapter);
+        //kattintós lófasz
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String mireKattintottál = listView.getItemAtPosition(position).toString();
+                Log.d("Teszt",mireKattintottál);
+                Toast.makeText(ClientActivity.this,""+mireKattintottál,Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        }
+
+
 
     OnClickListener buttonConnectOnClickListener = new OnClickListener() {
 
