@@ -25,9 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     private void initDatabase(SQLiteDatabase db){
-
         if(checkIfTableExists(db, TABLE_NAME)) {
-            //TODO: megfelelő oszlopok beszúrása, mert nem tudom miket akarunk végül tárolni
             String databaseCreate = "CREATE TABLE IF NOT EXISTS Zenekeres" +
                     "(Video_ID TEXT PRIMARY KEY," +
                     "Video_NAME TEXT," +
@@ -42,6 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                     "('zSISvlwYweI','BSW - $oha nem elég')";
 
             db.execSQL(dataToInsert);
+            db.close();
         }
     }
 
