@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -31,10 +30,12 @@ public class ClientActivity extends Activity {
     ListView listView;
     EditText welcomeMsg;
     ArrayAdapter adapter;
-    ArrayList<String> list;
-    ArrayList<String> listid;
+    ArrayList<String> musicList;
+    ArrayList<String> musicIdList;
     private final static String TABLE_NAME = "Kliens";
     DatabaseHelper dh;
+
+    public static String serverIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,22 +57,22 @@ public class ClientActivity extends Activity {
                 textResponse.setText("");
             }
         });
-        myDb=new DatabaseHelper(this);
         final MyClientTask myclienttask=new MyClientTask("",8080,"");
 
         //ez van a lista megjelenítéshez, törölendő lesz majd egyszer
         listView=findViewById(R.id.listview);
-        list = myDb.getMusicList(TABLE_NAME);
-        listid=myDb.getVideoIDList(TABLE_NAME);
-        adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,list);
+        musicList = dh.getMusicList(TABLE_NAME);
+        musicIdList = dh.getVideoIDList(TABLE_NAME);
+        adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,musicList);
         listView.setAdapter(adapter);
+
 
         //kattintós cucc
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //String mireKattintottál = listView.getItemAtPosition(position).toString();
-                String mireKattintottálId=listid.get(position);
+                String mireKattintottálId= musicIdList.get(position);
                // Log.d("Teszt",mireKattintottál);
                Toast.makeText(ClientActivity.this,""+mireKattintottálId,Toast.LENGTH_SHORT).show();
                 MyClientTask myClientTask = new MyClientTask(editTextAddress
@@ -79,7 +80,7 @@ public class ClientActivity extends Activity {
                         .getText().toString()),
                         mireKattintottálId);
                 myClientTask.execute();
-                dh.updateSql(TABLE_NAME,mireKattintottálId);    // a tábla frissítése
+                dh.updateSql(TABLE_NAME, mireKattintottálId);    // a tábla frissítése
             }
         });
 
@@ -91,7 +92,7 @@ public class ClientActivity extends Activity {
 
         @Override
         public void onClick(View arg0) {
-
+            serverIp = editTextAddress.getText().toString();
             String tMsg = welcomeMsg.getText().toString();
             if(tMsg.equals("")){
                 tMsg = null;

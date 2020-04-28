@@ -219,7 +219,6 @@ implements YouTubePlayer.OnInitializedListener {
                 Socket socket = null;
                 DataInputStream dataInputStream = null;
                 DataOutputStream dataOutputStream = null;
-                Log.d(TAG, "fut a szerver");
                 try {
                     serverSocket = new ServerSocket(SocketServerPORT);
                     ServerinBackground.this.runOnUiThread(new Runnable() {
@@ -240,6 +239,7 @@ implements YouTubePlayer.OnInitializedListener {
                                 socket.getOutputStream());
 
                         String messageFromClient = "";
+
 
                         //If no message sent from client, this code will block the program
                         messageFromClient = dataInputStream.readUTF();

@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        DatabaseHelper dh = new DatabaseHelper(this);
     }
 
 }

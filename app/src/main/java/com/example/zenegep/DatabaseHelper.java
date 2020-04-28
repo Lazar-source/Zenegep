@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME="Zenegep.db";
@@ -29,7 +30,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public void initDatabase(String table){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        //ezt a két sort ne felejtsük el kikommentelni, mert igy mindig dropolja a tablet
+        //TODO: ezt a két sort ne felejtsük el majd kikommentelni, mert igy mindig dropolja a tablet
         String dropdatabase="DROP TABLE IF EXISTS "+table;
         db.execSQL(dropdatabase);
 
@@ -50,18 +51,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                     "('zSISvlwYweI','BSW - $oha nem elég')";
 
             db.execSQL(dataToInsert);
-
-            /*Log.d("Teszt",table+" tábla létrehozva és feltöltve");
-
-            String sql = "SELECT Video_NAME FROM "+table;
-            Cursor c = getData(sql);
-            c.moveToFirst();
-
-            while(!c.isAfterLast()) {
-                Log.d("Tartalom: ",c.getString(c.getColumnIndex("Video_NAME")));
-                c.moveToNext();
-            }
-            */
             db.close();
         }
     }
@@ -115,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
     }
 */
+
     public ArrayList getMusicList(String table){
         ArrayList<String> musicList = new ArrayList<String>();
         String sql = "SELECT Video_NAME FROM "+table;
@@ -127,6 +117,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
         return musicList;
     }
+
     public ArrayList getVideoIDList(String table)
     {
         ArrayList<String> musicIDs = new ArrayList<String>();
@@ -159,8 +150,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public ArrayList getLastDayPopularList(String table){
         ArrayList<String> list = new ArrayList<String>();
-        String sql = "SELECT Video_NAME, SentCount FROM "+table+" ORDER BY SentCount DESC " +
-                "WHERE Timestamp >= datetime('now', '-1 days') AND Timestamp < datetime('now')";
+        String sql = "SELECT Video_NAME, SentCount FROM "+table+" WHERE Timestamp >= datetime('now', '-1 days') AND Timestamp < datetime('now')" +
+                " ORDER BY SentCount DESC";
         Cursor c = getData(sql);
         c.moveToFirst();
 
@@ -168,6 +159,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             String videoname = c.getString(c.getColumnIndex("Video_NAME"));
             int count = c.getInt(c.getColumnIndex("SentCount"));
             String stringToAdd = videoname + " - "+count;
+            Log.d("elemek",stringToAdd);
             list.add(stringToAdd);
             c.moveToNext();
         }
@@ -180,5 +172,25 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 "WHERE Video_ID = '"+videoid+"'";
 
         Query(updateSql);
+    }
+
+    public String suggestMusic(){
+        Random rnd = new Random();
+        String musicIdToSuggest;
+        String[] musicList = new String[10];
+        int i = 0;
+        String sql = "SELECT Video_NAME FROM "+TABLE_CLIENT+" ORDER BY SentCount DESC LIMIT 10";
+        Cursor c = getData(sql);
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            musicList[i] = c.getString(c.getColumnIndex("Video_NAME"));
+            c.moveToNext();
+            i++;
+        }
+        c.close();
+        musicIdToSuggest=musicList[rnd.nextInt(10)];
+
+        //TODO: rendes visszatérési értéket adni, mert most így hirtelen nem tudom mit kellene
+        return musicIdToSuggest;
     }
 }
