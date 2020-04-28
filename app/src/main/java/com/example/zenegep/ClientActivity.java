@@ -32,6 +32,7 @@ public class ClientActivity extends Activity {
     EditText welcomeMsg;
     ArrayAdapter adapter;
     ArrayList<String> list;
+    ArrayList<String> listid;
 
 
     @Override
@@ -54,19 +55,28 @@ public class ClientActivity extends Activity {
             }
         });
         myDb=new DatabaseHelper(this);
+        final MyClientTask myclienttask=new MyClientTask("",8080,"");
 
         //ez van a lista megjelenítéshez, törölendő lesz majd egyszer
         listView=findViewById(R.id.listview);
         list = myDb.getMusicList();
+        listid=myDb.getVideoIDList();
         adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
         //kattintós lófasz
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String mireKattintottál = listView.getItemAtPosition(position).toString();
-                Log.d("Teszt",mireKattintottál);
-                Toast.makeText(ClientActivity.this,""+mireKattintottál,Toast.LENGTH_SHORT).show();
+                //String mireKattintottál = listView.getItemAtPosition(position).toString();
+                String mireKattintottálId=listid.get(position);
+               // Log.d("Teszt",mireKattintottál);
+               Toast.makeText(ClientActivity.this,""+mireKattintottálId,Toast.LENGTH_SHORT).show();
+                MyClientTask myClientTask = new MyClientTask(editTextAddress
+                        .getText().toString(), Integer.parseInt(editTextPort
+                        .getText().toString()),
+                        mireKattintottálId);
+                myClientTask.execute();
+
             }
         });
 

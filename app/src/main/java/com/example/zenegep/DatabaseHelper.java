@@ -27,6 +27,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public void initDatabase(){
         SQLiteDatabase db = this.getWritableDatabase();
+       /* String dropdatabase="DROP TABLE Zenekeres";
+        db.execSQL(dropdatabase);*/
         if(!checkIfTableExists(db, TABLE_NAME)) {
             String databaseCreate = "CREATE TABLE IF NOT EXISTS Zenekeres" +
                     "(Video_ID TEXT PRIMARY KEY, " +
@@ -42,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                     "('zSISvlwYweI','BSW - $oha nem elég')";
 
             db.execSQL(dataToInsert);
+
             db.close();
         }
     }
@@ -104,6 +107,19 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             c.moveToNext();
         }
         return musicList;
+    }
+    public ArrayList getVideoIDList()
+    {
+        ArrayList<String> musicIDs = new ArrayList<String>();
+        String sql = "SELECT Video_ID FROM "+TABLE_NAME;
+        Cursor c = getData(sql);
+        c.moveToFirst();
+
+        while(!c.isAfterLast()) {
+            musicIDs.add(c.getString(c.getColumnIndex("Video_ID")));
+            c.moveToNext();
+        }
+        return musicIDs;
     }
 
     public ArrayList getAllTimePopularList(){

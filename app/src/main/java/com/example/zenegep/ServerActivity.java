@@ -21,6 +21,9 @@ public class ServerActivity extends Activity{
     TextView info, infoip, msg;
     String message = "";
     ServerSocket serverSocket;
+    String messageFromClient = "";
+    String[] msgFromClient;
+    int Index=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,11 +90,12 @@ public class ServerActivity extends Activity{
                     dataOutputStream = new DataOutputStream(
                             socket.getOutputStream());
 
-                    String messageFromClient = "";
+                    messageFromClient = "";
 
                     //If no message sent from client, this code will block the program
                     messageFromClient = dataInputStream.readUTF();
-
+                    msgFromClient[Index]=messageFromClient;
+                    Index++;
                     count++;
                     message += "#" + count + " from " + socket.getInetAddress()
                             + ":" + socket.getPort() + "\n"

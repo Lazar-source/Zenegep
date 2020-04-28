@@ -156,6 +156,7 @@ implements YouTubePlayer.OnInitializedListener {
         @Override
         public void onVideoEnded() {
             Toast.makeText(YoutubeActivity.this, "Thanks for watching!", Toast.LENGTH_LONG).show();
+            //TODO inicializálni ezt a fosást, hogy egy if-el tudjuk ellenőrizni van-e beküldött zene
             YOUTUBE_VIDEO_ID = Music[count];
             count--;
             youTubePlayer.cueVideo(YOUTUBE_VIDEO_ID);
@@ -175,7 +176,6 @@ implements YouTubePlayer.OnInitializedListener {
     }
 
     static class ServerinBackground extends Activity {
-        //TextView info, msg;
         String message = "";
 
 
