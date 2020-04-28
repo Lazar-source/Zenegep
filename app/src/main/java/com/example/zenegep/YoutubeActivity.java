@@ -45,7 +45,8 @@ implements YouTubePlayer.OnInitializedListener {
     public static int count = 0;
     private static final String TAG = "MyActivity";
     private static final String TABLE_NAME = "Szerver";
-    DatabaseHelper dh;
+    public DatabaseHelper dh;
+
 
     public void StartServerThread(){
        ServerinBackground sb = new ServerinBackground();
@@ -66,6 +67,8 @@ implements YouTubePlayer.OnInitializedListener {
         StartServerThread();
         dh = new DatabaseHelper(this);
         dh.initDatabase(TABLE_NAME);
+
+
     }
 
 
@@ -181,6 +184,7 @@ implements YouTubePlayer.OnInitializedListener {
 
     static class ServerinBackground extends Activity {
         String message = "";
+        DatabaseHelper dh=new DatabaseHelper(this);
 
 
         @Override
@@ -233,6 +237,7 @@ implements YouTubePlayer.OnInitializedListener {
                         message=messageFromClient;
                         Music[count]=message;
                         count++;
+                        dh.updateSql(TABLE_NAME,Music[count]);
 
                         ServerinBackground.this.runOnUiThread(new Runnable() {
 
