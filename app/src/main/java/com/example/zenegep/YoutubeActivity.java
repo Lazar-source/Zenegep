@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.zenegep.ServerActivity.*;
 
@@ -43,9 +46,12 @@ implements YouTubePlayer.OnInitializedListener {
     private YouTubePlayerView youTubePlayerView;
     public static String[] Music = new String[255];
     public static int count = 0;
+    public static int[] Prio= new int[255];
     private static final String TAG = "MyActivity";
     private static final String TABLE_NAME = "Szerver";
     public DatabaseHelper dh;
+    /*public static List<Pair<String,Integer>> Music =
+            new ArrayList <> ();*/
 
 
     public void StartServerThread(){
@@ -67,6 +73,11 @@ implements YouTubePlayer.OnInitializedListener {
         StartServerThread();
         dh = new DatabaseHelper(this);
         dh.initDatabase(TABLE_NAME);
+        for(int i=0;i<255;i++)
+        {
+            Music[i]=" ";
+            Prio[i]=0;
+        }
 
 
     }
@@ -233,11 +244,45 @@ implements YouTubePlayer.OnInitializedListener {
                         //If no message sent from client, this code will block the program
                         messageFromClient = dataInputStream.readUTF();
 
-
+                        boolean tartalmaz=false;
                         message=messageFromClient;
-                        Music[count]=message;
-                        count++;
-                        dh.updateSql(TABLE_NAME,Music[count]);
+                        int index=0;
+                        for(int i=0;i<count&&!tartalmaz;i++)
+                        {
+                            if(message==Music[i])
+                            {
+                                tartalmaz=true;
+                                index=i;
+
+                            }
+                        }
+
+                        if(!tartalmaz) {
+
+                            Music[count] = message;
+                            Prio[count]++;
+                            dh.updateSql(TABLE_NAME, Music[count]);
+                            count++;
+                        }
+                        else
+                        {
+                            Prio[index]++;
+                            for(int i=0;i<count;i++)
+                            {
+                                if(Prio[i]<Prio[i+1])
+                                {
+                                    int temp;
+                                    String stemp;
+                                    temp=Prio[i];
+                                    stemp=Music[i];
+                                    Prio[i]=Prio[i+1];
+                                    Music[i]=Music[i+1];
+                                    Music[i+1]=stemp;
+                                    Prio[i+1]=temp;
+
+                                }
+                            }
+                        }
 
                         ServerinBackground.this.runOnUiThread(new Runnable() {
 
