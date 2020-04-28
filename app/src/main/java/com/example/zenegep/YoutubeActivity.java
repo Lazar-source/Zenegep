@@ -44,6 +44,8 @@ implements YouTubePlayer.OnInitializedListener {
     public static String[] Music = new String[255];
     public static int count = 0;
     private static final String TAG = "MyActivity";
+    private static final String TABLE_NAME = "Szerver";
+    DatabaseHelper dh;
 
     public void StartServerThread(){
        ServerinBackground sb = new ServerinBackground();
@@ -62,6 +64,8 @@ implements YouTubePlayer.OnInitializedListener {
         msg = findViewById(R.id.msg);
         infoip.setText(getIpAddress());
         StartServerThread();
+        dh = new DatabaseHelper(this);
+        dh.initDatabase(TABLE_NAME);
     }
 
 

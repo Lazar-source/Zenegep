@@ -33,13 +33,15 @@ public class ClientActivity extends Activity {
     ArrayAdapter adapter;
     ArrayList<String> list;
     ArrayList<String> listid;
-
+    private final static String TABLE_NAME = "Kliens";
+    DatabaseHelper dh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
-
+        dh = new DatabaseHelper(this);
+        dh.initDatabase(TABLE_NAME);
         editTextAddress =  findViewById(R.id.address);
         editTextPort =  findViewById(R.id.port);
         buttonConnect =  findViewById(R.id.connect);
@@ -59,11 +61,12 @@ public class ClientActivity extends Activity {
 
         //ez van a lista megjelenítéshez, törölendő lesz majd egyszer
         listView=findViewById(R.id.listview);
-        list = myDb.getMusicList();
-        listid=myDb.getVideoIDList();
+        list = myDb.getMusicList(TABLE_NAME);
+        listid=myDb.getVideoIDList(TABLE_NAME);
         adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
-        //kattintós lófasz
+
+        //kattintós cucc
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -76,7 +79,7 @@ public class ClientActivity extends Activity {
                         .getText().toString()),
                         mireKattintottálId);
                 myClientTask.execute();
-
+                dh.updateSql(TABLE_NAME,mireKattintottálId);    // a tábla frissítése
             }
         });
 

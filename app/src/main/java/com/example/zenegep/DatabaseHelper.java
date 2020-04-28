@@ -11,7 +11,8 @@ import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME="Zenegep.db";
-    public static final String TABLE_NAME="Zenekeres";
+    public static final String TABLE_SERVER="Szerver";
+    public static final String TABLE_CLIENT="Kliens";
 
     private boolean checkIfTableExists(SQLiteDatabase db, String table){
         String check = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='"+table+"'";
@@ -25,26 +26,42 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return count>0;
     }
 
-    public void initDatabase(){
+    public void initDatabase(String table){
         SQLiteDatabase db = this.getWritableDatabase();
-       /* String dropdatabase="DROP TABLE Zenekeres";
-        db.execSQL(dropdatabase);*/
-        if(!checkIfTableExists(db, TABLE_NAME)) {
-            String databaseCreate = "CREATE TABLE IF NOT EXISTS Zenekeres" +
+
+        //ezt a két sort ne felejtsük el kikommentelni, mert igy mindig dropolja a tablet
+        String dropdatabase="DROP TABLE IF EXISTS "+table;
+        db.execSQL(dropdatabase);
+
+        String databaseCreate;
+        String dataToInsert;
+        if(!checkIfTableExists(db, table)) {
+            databaseCreate = "CREATE TABLE IF NOT EXISTS "+table +
                     "(Video_ID TEXT PRIMARY KEY, " +
                     "Video_NAME TEXT, " +
                     "SentCount INTEGER DEFAULT 0, " +
-                    "Timestamp TEXT DEFAULT '1970-01-01');";
+                    "Timestamp TEXT DEFAULT '1970-01-01 00:00:00')";
 
             db.execSQL(databaseCreate);
             //TODO: feltölteni a zenékkel, amit akarunk, hogy benne legyen
-            String dataToInsert = "INSERT INTO Zenekeres (Video_ID, Video_NAME) VALUES" +
+            dataToInsert = "INSERT INTO "+table+" (Video_ID, Video_NAME) VALUES" +
                     "('fJ9rUzIMcZQ', 'Queen - Bohemian Rhapsody')," +
                     "('NyOGIsds2C4','Yung Gravy, bbno$ - Whip A Tesla')," +
                     "('zSISvlwYweI','BSW - $oha nem elég')";
 
             db.execSQL(dataToInsert);
 
+            /*Log.d("Teszt",table+" tábla létrehozva és feltöltve");
+
+            String sql = "SELECT Video_NAME FROM "+table;
+            Cursor c = getData(sql);
+            c.moveToFirst();
+
+            while(!c.isAfterLast()) {
+                Log.d("Tartalom: ",c.getString(c.getColumnIndex("Video_NAME")));
+                c.moveToNext();
+            }
+            */
             db.close();
         }
     }
@@ -52,14 +69,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        initDatabase();
+        //felesleges rakni ide is bármit i believe
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion)
     {
         //ez mit csinál?
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_SERVER);
+        onCreate(db);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_CLIENT);
         onCreate(db);
     }
 
@@ -79,7 +98,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.close();
     }
 
-    public void insertData(String videoid, String videoname)
+    /*public void insertData(String videoid, String videoname)          //ez nem kell, ha jól gondolom
     {
         String getSql = "SELECT * FROM Zenekeres WHERE Video_ID='"+videoid+"'";
 
@@ -95,10 +114,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             Query(sql);
         }
     }
-
-    public ArrayList getMusicList(){
+*/
+    public ArrayList getMusicList(String table){
         ArrayList<String> musicList = new ArrayList<String>();
-        String sql = "SELECT Video_NAME FROM "+TABLE_NAME;
+        String sql = "SELECT Video_NAME FROM "+table;
         Cursor c = getData(sql);
         c.moveToFirst();
 
@@ -108,10 +127,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
         return musicList;
     }
-    public ArrayList getVideoIDList()
+    public ArrayList getVideoIDList(String table)
     {
         ArrayList<String> musicIDs = new ArrayList<String>();
-        String sql = "SELECT Video_ID FROM "+TABLE_NAME;
+        String sql = "SELECT Video_ID FROM "+table;
         Cursor c = getData(sql);
         c.moveToFirst();
 
@@ -122,9 +141,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return musicIDs;
     }
 
-    public ArrayList getAllTimePopularList(){
+    public ArrayList getAllTimePopularList(String table){
         ArrayList<String> list = new ArrayList<String>();
-        String sql = "SELECT Video_NAME, SentCount FROM Zenekeres ORDER BY SentCount DESC";
+        String sql = "SELECT Video_NAME, SentCount FROM "+table+" ORDER BY SentCount DESC";
         Cursor c = getData(sql);
         c.moveToFirst();
 
@@ -138,10 +157,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return list;
     }
 
-    public ArrayList getLastDayPopularList(){
+    public ArrayList getLastDayPopularList(String table){
         ArrayList<String> list = new ArrayList<String>();
-        String sql = "SELECT Video_NAME, SentCount FROM Zenekeres ORDER BY SentCount DESC " +
-                "WHERE Timestamp >= date('now', '-1 days') AND Timestamp < date('now')";
+        String sql = "SELECT Video_NAME, SentCount FROM "+table+" ORDER BY SentCount DESC " +
+                "WHERE Timestamp >= datetime('now', '-1 days') AND Timestamp < datetime('now')";
         Cursor c = getData(sql);
         c.moveToFirst();
 
@@ -153,5 +172,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             c.moveToNext();
         }
         return list;
+    }
+
+    public void updateSql(String table, String videoid){
+        String updateSql = "UPDATE "+table+" SET SentCount = SentCount + 1," +
+                "Timestamp = datetime('now')" +
+                "WHERE Video_ID = '"+videoid+"'";
+
+        Query(updateSql);
     }
 }
