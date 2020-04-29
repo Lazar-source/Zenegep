@@ -74,14 +74,13 @@ public class ClientActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //String mireKattintottál = listView.getItemAtPosition(position).toString();
                 String mireKattintottálId= musicIdList.get(position);
-               // Log.d("Teszt",mireKattintottál);
                Toast.makeText(ClientActivity.this,""+mireKattintottálId,Toast.LENGTH_SHORT).show();
                 MyClientTask myClientTask = new MyClientTask(editTextAddress
                         .getText().toString(), Integer.parseInt(editTextPort
                         .getText().toString()),
                         mireKattintottálId);
                 myClientTask.execute();
-                dh.updateSql(TABLE_NAME, mireKattintottálId);    // a tábla frissítése
+                dh.updateSql(TABLE_NAME, mireKattintottálId);
             }
         });
 
@@ -90,10 +89,8 @@ public class ClientActivity extends Activity {
 
 
     OnClickListener buttonConnectOnClickListener = new OnClickListener() {
-
         @Override
         public void onClick(View arg0) {
-
             //String tMsg = welcomeMsg.getText().toString();
             /*if(tMsg.equals("")){
                 tMsg = null;
@@ -105,12 +102,10 @@ public class ClientActivity extends Activity {
                     .getText().toString(), 8080,
                     "connect");
             myClientTask.execute();
-
         }
     };
 
     public class MyClientTask extends AsyncTask<Void, Void, Void> {
-
         String dstAddress;
         int dstPort;
         String response = "";

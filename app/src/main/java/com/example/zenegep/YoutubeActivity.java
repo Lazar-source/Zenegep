@@ -251,7 +251,7 @@ implements YouTubePlayer.OnInitializedListener {
                         }
                         else if (message.equals("connect")){
                             ipAddresses.add(socket.getInetAddress().toString());
-                            Log.d("Teszt",ipAddresses.toString());
+                            //Log.d("Teszt",ipAddresses.toString());
                         }
 
                         ServerinBackground.this.runOnUiThread(new Runnable() {

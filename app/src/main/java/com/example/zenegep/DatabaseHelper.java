@@ -16,10 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String TABLE_CLIENT="Kliens";
 
     @Override
-    public void onCreate(SQLiteDatabase db)
-    {
-        Log.d("teszt", "ah shit");
-    }
+    public void onCreate(SQLiteDatabase db){}
 
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion)
@@ -46,7 +43,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         int count = c.getInt(0);
         c.close();
-        db.close();
         return count>0;
     }
 
@@ -149,7 +145,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             String videoname = c.getString(c.getColumnIndex("Video_NAME"));
             int count = c.getInt(c.getColumnIndex("SentCount"));
             String stringToAdd = videoname + " - "+count;
-            Log.d("elemek",stringToAdd);
             list.add(stringToAdd);
             c.moveToNext();
         }
