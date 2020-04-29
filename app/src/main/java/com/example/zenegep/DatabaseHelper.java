@@ -163,7 +163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public String suggestMusic(){
         Random rnd = new Random();
         String musicIdToSuggest;
-        String[] musicList = new String[10];
+        String[] musicList = new String[3];
         int i = 0;
         String sql = "SELECT Video_NAME FROM "+TABLE_CLIENT+" ORDER BY SentCount DESC LIMIT 10";
         Cursor c = getData(sql);
@@ -174,9 +174,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             i++;
         }
         c.close();
-        musicIdToSuggest=musicList[rnd.nextInt(10)];
+        musicIdToSuggest=musicList[rnd.nextInt(3)];
 
-        //TODO: rendes visszatérési értéket adni, mert most így hirtelen nem tudom mit kellene
         return musicIdToSuggest;
     }
 

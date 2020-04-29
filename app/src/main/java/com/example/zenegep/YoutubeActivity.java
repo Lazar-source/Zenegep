@@ -172,7 +172,7 @@ implements YouTubePlayer.OnInitializedListener {
 
     static class ServerinBackground extends Activity {
         String message = "";
-
+        String reply;
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -180,7 +180,7 @@ implements YouTubePlayer.OnInitializedListener {
 
         class SocketServerThread extends Thread {
             Context context;
-            public SocketServerThread(Context context){
+            public SocketServerThread(Context context) {
                 this.context=context;
             }
 
@@ -248,10 +248,14 @@ implements YouTubePlayer.OnInitializedListener {
                                     }
                                 }
                             }
+                            reply="added";
+                            dataOutputStream.writeUTF(reply);
                         }
                         else if (message.equals("connect")){
                             ipAddresses.add(socket.getInetAddress().toString());
                             //Log.d("Teszt",ipAddresses.toString());
+                            reply = "connected";
+                            dataOutputStream.writeUTF(reply);
                         }
 
                         ServerinBackground.this.runOnUiThread(new Runnable() {
@@ -260,6 +264,8 @@ implements YouTubePlayer.OnInitializedListener {
                                 msg.setText(message);
                             }
                         });
+
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

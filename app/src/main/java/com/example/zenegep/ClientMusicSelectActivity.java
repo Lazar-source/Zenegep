@@ -1,6 +1,17 @@
 package com.example.zenegep;
 
+import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,53 +20,54 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.app.Activity;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ListView;
-
-public class ClientActivity extends Activity {
-    TextView textResponse;
-    EditText editTextAddress;
-    Button buttonConnect;
+public class ClientMusicSelectActivity extends AppCompatActivity {
+    ListView musicListView;
+    ArrayList<String> musicList;
+    ArrayList<String> musicIdList;
+    ArrayAdapter adapter;
+    static final  String serverIp= ClientActivity.serverIp;
+    private final static String TABLE_NAME = DatabaseHelper.TABLE_CLIENT;
     DatabaseHelper dh;
-    public static String serverIp;
+    TextView suggestedMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_client);
+        setContentView(R.layout.activity_client_music_select);
         dh = new DatabaseHelper(this);
-        editTextAddress =  findViewById(R.id.address);
-        buttonConnect =  findViewById(R.id.connect);
-        textResponse =  findViewById(R.id.response);
-        buttonConnect.setOnClickListener(buttonConnectOnClickListener);
+        musicList = dh.getMusicList(TABLE_NAME);
+        musicIdList = dh.getVideoIDList(TABLE_NAME);
+        musicListView = findViewById(R.id.musicList);
+        suggestedMusic = findViewById(R.id.suggestedMusic);
+        adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,musicList);
+        musicListView.setAdapter(adapter);
+        suggestedMusic.setText(dh.suggestMusic());
 
-        }
-
-    OnClickListener buttonConnectOnClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View arg0) {
-            //String tMsg = welcomeMsg.getText().toString();
-            /*if(tMsg.equals("")){
-                tMsg = null;
-                Toast.makeText(ClientActivity.this, "No Welcome Msg sent", Toast.LENGTH_SHORT).show();
+        musicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String mireKattintottálId= musicIdList.get(position);
+                //Toast.makeText(ClientMusicSelectActivity.this,""+mireKattintottálId,Toast.LENGTH_SHORT).show();
+                MyClientTask myClientTask = new MyClientTask(serverIp, 8080,mireKattintottálId);
+                myClientTask.execute();
             }
-*/
-            MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, "connect");
-            myClientTask.execute();
-        }
-    };
+        });
+
+        suggestedMusic.setOnClickListener(new View.OnClickListener() {
+            int pos;
+            @Override
+            public void onClick(View v) {
+                for (int i =0;i<musicList.size();i++)
+                    if(musicList.get(i).equals(suggestedMusic.getText().toString()))
+                        pos=i;
+
+                String item = musicIdList.get(pos);
+                //Toast.makeText(ClientMusicSelectActivity.this,""+item,Toast.LENGTH_SHORT).show();
+                MyClientTask myClientTask = new MyClientTask(serverIp,8080,item);
+                myClientTask.execute();
+            }
+        });
+    }
 
     public class MyClientTask extends AsyncTask<Void, Void, Void> {
         String dstAddress;
@@ -130,18 +142,17 @@ public class ClientActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
-            if (response.equals("connected")){
-                serverIp = dstAddress;
-                Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
-                startActivity(intent);
+            if (response.equals("added")){
+                dh.updateSql(TABLE_NAME, msgToServer);
+                //TODO: ide majd egy toast, hogy hozzáadta a zenét a lejátszási listához
+                //TODO? visszalépjünk-e az előző ektivitire???
             }
-            else {
-                response = "Sikertelen csatlakozás!";
-                textResponse.setText(response);
-            }
+
+
             super.onPostExecute(result);
         }
 
     }
 
 }
+
