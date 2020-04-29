@@ -38,6 +38,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        button =  findViewById(R.id.button_statistics);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), StatisticsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 }

@@ -41,7 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                     "(Video_ID TEXT PRIMARY KEY, " +
                     "Video_NAME TEXT, " +
                     "SentCount INTEGER DEFAULT 0, " +
-                    "Timestamp TEXT DEFAULT '1970-01-01 00:00:00')";
+                    "Timestamp TEXT DEFAULT '2020-04-29 00:00:00')";
 
             db.execSQL(databaseCreate);
             //TODO: feltölteni a zenékkel, amit akarunk, hogy benne legyen
