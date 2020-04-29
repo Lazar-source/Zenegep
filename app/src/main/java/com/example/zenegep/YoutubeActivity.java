@@ -43,6 +43,7 @@ public class YoutubeActivity extends YouTubeBaseActivity
 implements YouTubePlayer.OnInitializedListener {
     private static String GOOGLE_API_KEY = "AIzaSyBNk8C_vUyaMjIvPb6RnekVZ2i6p0xEz7c";
     private static String YOUTUBE_VIDEO_ID = "EmFED7vdk7Y";
+    private static DatabaseHelper dh;
     ServerSocket serverSocket;
     public static TextView info, infoip, msg;
     private YouTubePlayer youTubePlayer;
@@ -245,7 +246,7 @@ implements YouTubePlayer.OnInitializedListener {
                         //If no message sent from client, this code will block the program
                         messageFromClient = dataInputStream.readUTF();
                         message=messageFromClient;
-                        DatabaseHelper dh = new DatabaseHelper(ServerinBackground.this);  //ezzel van valami baj fasz kivan
+                         dh = new DatabaseHelper(ServerinBackground.this);  //ezzel van valami baj fasz kivan
 
                         if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)) {
                             boolean tartalmaz = false;

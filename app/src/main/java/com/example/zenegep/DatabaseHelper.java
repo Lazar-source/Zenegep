@@ -15,6 +15,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String TABLE_SERVER="Szerver";
     public static final String TABLE_CLIENT="Kliens";
 
+
+
+
     private boolean checkIfTableExists(SQLiteDatabase db, String table){
         String check = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='"+table+"'";
         Cursor c = db.rawQuery(check, null);
