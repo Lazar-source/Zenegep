@@ -15,18 +15,38 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String TABLE_SERVER="Szerver";
     public static final String TABLE_CLIENT="Kliens";
 
+    @Override
+    public void onCreate(SQLiteDatabase db)
+    {
+        Log.d("teszt", "ah shit");
+    }
 
+    @Override
+    public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion)
+    {
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_SERVER);
+        onCreate(db);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_CLIENT);
+        onCreate(db);
+    }
 
+    public DatabaseHelper(Context context ){
+        super(context,DATABASE_NAME, null,1);
+        SQLiteDatabase db=this.getWritableDatabase();
+    }
 
     private boolean checkIfTableExists(SQLiteDatabase db, String table){
         String check = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='"+table+"'";
         Cursor c = db.rawQuery(check, null);
+
         if (!c.moveToFirst()) {
             c.close();
             return false;
         }
+
         int count = c.getInt(0);
         c.close();
+        db.close();
         return count>0;
     }
 
@@ -60,27 +80,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db)
-    {
-        //felesleges rakni ide is bármit i believe
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion)
-    {
-        //ez mit csinál?
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_SERVER);
-        onCreate(db);
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_CLIENT);
-        onCreate(db);
-    }
-
-    public DatabaseHelper(Context context ){
-        super(context,DATABASE_NAME, null,1);
-        SQLiteDatabase db=this.getWritableDatabase();
-    }
-
     private Cursor getData(String sql){
         SQLiteDatabase dbR=this.getReadableDatabase();
         return dbR.rawQuery(sql,null);
@@ -91,24 +90,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.execSQL(sql);
         db.close();
     }
-
-    /*public void insertData(String videoid, String videoname)          //ez nem kell, ha jól gondolom
-    {
-        String getSql = "SELECT * FROM Zenekeres WHERE Video_ID='"+videoid+"'";
-
-        if(getData(getSql).getCount()>0){      //ha már szerepel az adatbázisban az adott videoid
-            String updateSql = "UPDATE Zenekeres SET SentCount = SentCount + 1," +
-                                                "Timestamp = Date('now')" +
-                                                "WHERE Video_ID = '"+videoid+"'";
-            Query(updateSql);
-        }
-        else {              //ha nem szerepel a megadott videoid
-            String sql = "INSERT INTO Zenekeres VALUES" +
-                    "("+videoid+", "+videoname+",1,date('now'))";
-            Query(sql);
-        }
-    }
-*/
 
     public ArrayList getMusicList(String table){
         ArrayList<String> musicList = new ArrayList<String>();
