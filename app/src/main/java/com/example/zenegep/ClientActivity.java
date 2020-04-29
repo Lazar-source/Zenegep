@@ -29,10 +29,11 @@ public class ClientActivity extends Activity {
     Button buttonConnect, buttonClear;
     ListView listView;
     EditText welcomeMsg;
+    TextView suggestedMusic;
     ArrayAdapter adapter;
     ArrayList<String> musicList;
     ArrayList<String> musicIdList;
-    private final static String TABLE_NAME = "Kliens";
+    private final static String TABLE_NAME = DatabaseHelper.TABLE_CLIENT;
     DatabaseHelper dh;
 
     public static String serverIp;
@@ -42,9 +43,8 @@ public class ClientActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
         dh = new DatabaseHelper(this);
-        dh.initDatabase(TABLE_NAME);
+        suggestedMusic = findViewById(R.id.suggestedMusic);
         editTextAddress =  findViewById(R.id.address);
-        editTextPort =  findViewById(R.id.port);
         buttonConnect =  findViewById(R.id.connect);
         buttonClear = findViewById(R.id.clear);
         textResponse =  findViewById(R.id.response);
@@ -66,6 +66,7 @@ public class ClientActivity extends Activity {
         adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,musicList);
         listView.setAdapter(adapter);
 
+        suggestedMusic.setText(dh.suggestMusic());
 
         //kattintós cucc
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -92,18 +93,19 @@ public class ClientActivity extends Activity {
 
         @Override
         public void onClick(View arg0) {
-            serverIp = editTextAddress.getText().toString();
-            String tMsg = welcomeMsg.getText().toString();
-            if(tMsg.equals("")){
+
+            //String tMsg = welcomeMsg.getText().toString();
+            /*if(tMsg.equals("")){
                 tMsg = null;
                 Toast.makeText(ClientActivity.this, "No Welcome Msg sent", Toast.LENGTH_SHORT).show();
             }
-
+*/
+            serverIp = editTextAddress.getText().toString();
             MyClientTask myClientTask = new MyClientTask(editTextAddress
-                    .getText().toString(), Integer.parseInt(editTextPort
-                    .getText().toString()),
-                    tMsg);
+                    .getText().toString(), 8080,
+                    "connect");
             myClientTask.execute();
+
         }
     };
 
@@ -138,7 +140,6 @@ public class ClientActivity extends Activity {
                 }
 
                 response = dataInputStream.readUTF();
-
             } catch (UnknownHostException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

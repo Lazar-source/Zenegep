@@ -52,6 +52,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
             db.execSQL(dataToInsert);
             db.close();
+
+            getLastDayPopularList(table);
         }
     }
 
@@ -115,6 +117,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             musicList.add(c.getString(c.getColumnIndex("Video_NAME")));
             c.moveToNext();
         }
+        c.close();
         return musicList;
     }
 
@@ -129,6 +132,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             musicIDs.add(c.getString(c.getColumnIndex("Video_ID")));
             c.moveToNext();
         }
+
+        c.close();
         return musicIDs;
     }
 
@@ -145,6 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             list.add(stringToAdd);
             c.moveToNext();
         }
+        c.close();
         return list;
     }
 
@@ -163,6 +169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             list.add(stringToAdd);
             c.moveToNext();
         }
+        c.close();
         return list;
     }
 
@@ -192,5 +199,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         //TODO: rendes visszatérési értéket adni, mert most így hirtelen nem tudom mit kellene
         return musicIdToSuggest;
+    }
+
+    public boolean isInDatabase(String musicId, String table){
+        ArrayList<String> idList = getVideoIDList(table);
+        return idList.contains(musicId);
     }
 }
