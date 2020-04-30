@@ -43,7 +43,7 @@ import static com.example.zenegep.ServerActivity.*;
 public class YoutubeActivity extends YouTubeBaseActivity
 implements YouTubePlayer.OnInitializedListener {
     private static String GOOGLE_API_KEY = "AIzaSyBNk8C_vUyaMjIvPb6RnekVZ2i6p0xEz7c";
-    private static String YOUTUBE_VIDEO_ID = "EmFED7vdk7Y";
+    private static String YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ";
     public static TextView info, infoip, msg;
     private YouTubePlayer youTubePlayer;
     private YouTubePlayerView youTubePlayerView;
@@ -111,7 +111,7 @@ implements YouTubePlayer.OnInitializedListener {
         youTubePlayer = player;
         youTubePlayer.setPlayerStateChangeListener(playerStateChangeListener);
         youTubePlayer.setPlaybackEventListener(playbackEventListener);
-        youTubePlayer.cueVideo(YOUTUBE_VIDEO_ID);
+        youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
     }
 
     private YouTubePlayer.PlaybackEventListener playbackEventListener = new YouTubePlayer.PlaybackEventListener() {
