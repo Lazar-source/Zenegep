@@ -10,7 +10,9 @@ import android.provider.ContactsContract;
 import android.provider.FontRequest;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,17 +50,19 @@ public class YoutubeActivity extends YouTubeBaseActivity
 implements YouTubePlayer.OnInitializedListener {
     private static String GOOGLE_API_KEY = "AIzaSyBNk8C_vUyaMjIvPb6RnekVZ2i6p0xEz7c";
     private static String YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ";
-    public static TextView infoip, msg;
+    public static TextView infoip, msg, txtactual;
     private YouTubePlayer youTubePlayer;
     private YouTubePlayerView youTubePlayerView;
-    public static String[] Music = new String[255];
+    public static ListView playListView;
     public static int count = 0;
-    public static int[] Prio = new int[255];
     public static Set<String> ipAddresses = new HashSet<String>();
     private static final String TAG = "MyActivity";
     private static final String TABLE_NAME = DatabaseHelper.TABLE_SERVER;
     public static Map<String, Integer> playList = new HashMap<String, Integer>();
-
+    public static ArrayAdapter adapter;
+    public static ArrayList<String> musicOnPlaylist = new ArrayList<>();
+    public static ArrayList<String> musicList = new ArrayList<>();
+    public static ArrayList<String> musicIDList = new ArrayList<>();
 
     @Override
     public void onBackPressed(){//le van tiltva a back gomb megnyomása a szervernél, kilépés gombbal lehet csak kilépni
@@ -69,18 +73,31 @@ implements YouTubePlayer.OnInitializedListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube);
+        DatabaseHelper dh = new DatabaseHelper(this);
         youTubePlayerView = findViewById(R.id.youtube_player);
         youTubePlayerView.initialize(GOOGLE_API_KEY, this);
         infoip = findViewById(R.id.infoip);
         msg = findViewById(R.id.msg);
+        txtactual = findViewById(R.id.txt_actual);
         infoip.setText(getIpAddress());
         StartServerThread(this);
-        for(int i=0;i<255;i++)
-        {
-            Music[i]=" ";
-            Prio[i]=0;
-        }
+        musicIDList = dh.getVideoIDList(TABLE_NAME);
+        musicList = dh.getMusicList(TABLE_NAME);
+        playListView = findViewById(R.id.actualPlayList);
+
+
+        //TODO EZT A GOMBOT ÉRTELMES HELYRE RAKNI
+        Button kilepes = findViewById(R.id.szerver_kilepes);
+        kilepes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                System.exit(0);
+            }
+        });
     }
+
+
 
     public void StartServerThread(Context context){
         ServerinBackground sb = new ServerinBackground();
@@ -169,6 +186,7 @@ implements YouTubePlayer.OnInitializedListener {
                     YOUTUBE_VIDEO_ID = getNextMusic();
                     count--;
                     youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
+
             }
             else{
                 Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
@@ -200,13 +218,27 @@ implements YouTubePlayer.OnInitializedListener {
 
         musicToPlay=musicList.get(max);
         playList.remove(musicToPlay);
+        refreshPlayList(this);
         return musicToPlay;
+    }
+
+    public static void refreshPlayList(Context context){
+        musicOnPlaylist.clear();
+        int index =0;
+        for (String s : playList.keySet())
+        {
+            for (int i =0;i<musicIDList.size();i++)
+                if (musicIDList.get(i).equals(s))
+                    index =i;
+            musicOnPlaylist.add(musicList.get(index));
+        }
+        adapter = new ArrayAdapter(context,android.R.layout.simple_list_item_1,musicOnPlaylist);
+        playListView.setAdapter(adapter);
     }
 
     static class ServerinBackground extends Activity {
         String message = "";
         String reply;
-
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -229,15 +261,6 @@ implements YouTubePlayer.OnInitializedListener {
                 DataOutputStream dataOutputStream = null;
                 try {
                     serverSocket = new ServerSocket(SocketServerPORT);
-                    /* ez nem kell
-                    ServerinBackground.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            info.setText("I'm waiting here: "
-                                    + serverSocket.getLocalPort());
-                        }
-                    });
-                      */
                     while (true) {
                         socket = serverSocket.accept();
                         dataInputStream = new DataInputStream(
@@ -261,6 +284,16 @@ implements YouTubePlayer.OnInitializedListener {
                                 playList.put(message,1);
                                 dh.updateSql(TABLE_NAME,message);
                                 count++;
+
+                                ServerinBackground.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        refreshPlayList(context);
+                                        infoip.setText("");
+                                        txtactual.setText("Jelenlegi zenék a lejátszási listában: ");
+                                    }
+                                });
+
                             }
 
                             reply="added";
@@ -272,14 +305,8 @@ implements YouTubePlayer.OnInitializedListener {
                             reply = "connected";
                             dataOutputStream.writeUTF(reply);
                         }
-
-                        ServerinBackground.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                msg.setText(message);
-                            }
-                        });
-
+                        //TODO: szavazós rendszer, de én ezt nem tudom hogyan lehetne megvalósítani
+                        // Activity meg layout megvan hozzá
 
                     }
                 } catch (IOException e) {

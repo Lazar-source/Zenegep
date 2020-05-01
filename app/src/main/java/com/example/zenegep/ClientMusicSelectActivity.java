@@ -144,11 +144,8 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             if (response.equals("added")){
                 dh.updateSql(TABLE_NAME, msgToServer);
-                //TODO: ide majd egy toast, hogy hozzáadta a zenét a lejátszási listához
                 Toast.makeText(ClientMusicSelectActivity.this, "A zene hozzáadva a lejátszási listához!", Toast.LENGTH_LONG).show();
             }
-
-
             super.onPostExecute(result);
         }
 

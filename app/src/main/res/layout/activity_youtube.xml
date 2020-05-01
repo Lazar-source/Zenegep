@@ -20,17 +20,26 @@
             app:title="Szerver - Zenelejátszás"
             app:titleTextColor="#FFFFFF" />
 
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include
-        layout="@layout/content_youtube"
-        />
+    <Button
+        android:id="@+id/szerver_kilepes"
+        android:layout_width="54dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="280dp"
+        android:background="@android:drawable/ic_lock_power_off" />
+
+
+    <include layout="@layout/content_youtube" />
+
     <TextView
         android:id="@+id/info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="280dp"
-        android:gravity="center"/>
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/infoip"
@@ -54,6 +63,17 @@
 
     </ScrollView>
 
+    <TextView
+        android:id="@+id/txt_actual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="290dp" />
+
+    <ListView
+        android:id="@+id/actualPlayList"
+        android:layout_width="match_parent"
+        android:layout_height="380dp"
+        android:layout_marginTop="310dp" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
