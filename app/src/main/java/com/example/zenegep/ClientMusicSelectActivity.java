@@ -46,9 +46,9 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
         musicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String mireKattintottálId= musicIdList.get(position);
+                String mireKattintottalId= musicIdList.get(position);
                 //Toast.makeText(ClientMusicSelectActivity.this,""+mireKattintottálId,Toast.LENGTH_SHORT).show();
-                MyClientTask myClientTask = new MyClientTask(serverIp, 8080,mireKattintottálId);
+                MyClientTask myClientTask = new MyClientTask(serverIp, 8080,mireKattintottalId);
                 myClientTask.execute();
             }
         });
@@ -145,7 +145,7 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
             if (response.equals("added")){
                 dh.updateSql(TABLE_NAME, msgToServer);
                 //TODO: ide majd egy toast, hogy hozzáadta a zenét a lejátszási listához
-                //TODO? visszalépjünk-e az előző ektivitire???
+                Toast.makeText(ClientMusicSelectActivity.this, "A zene hozzáadva a lejátszási listához!", Toast.LENGTH_LONG).show();
             }
 
 

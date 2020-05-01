@@ -33,6 +33,16 @@ public class ClientMenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        button = findViewById(R.id.button_vote);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),ClientVoteActivity.class);
+                startActivity(intent);
+
+            }
+        });
         //TODO: layoutra a többi gombot berakni, illetve megcsinálni a clicklistenereket
 
     }

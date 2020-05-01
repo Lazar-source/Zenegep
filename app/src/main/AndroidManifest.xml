@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ClientMusicSelectActivity"></activity>
+        <activity android:name=".ClientVoteActivity"></activity>
+        <activity android:name=".ClientMusicSelectActivity" />
         <activity android:name=".ClientMenuActivity" />
         <activity android:name=".YoutubeActivity" />
         <activity android:name=".ClientActivity" />

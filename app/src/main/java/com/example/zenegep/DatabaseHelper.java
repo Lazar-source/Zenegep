@@ -35,12 +35,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private boolean checkIfTableExists(SQLiteDatabase db, String table){
         String check = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='"+table+"'";
         Cursor c = db.rawQuery(check, null);
-
         if (!c.moveToFirst()) {
             c.close();
             return false;
         }
-
         int count = c.getInt(0);
         c.close();
         return count>0;
@@ -48,10 +46,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public void initDatabase(String table){
         SQLiteDatabase db = this.getWritableDatabase();
-
         //TODO: ezt a két sort ne felejtsük el majd kikommentelni, mert igy mindig dropolja a tablet
-        String dropdatabase="DROP TABLE IF EXISTS "+table;
-        db.execSQL(dropdatabase);
+        //String dropdatabase="DROP TABLE IF EXISTS "+table;
+        //db.execSQL(dropdatabase);
 
         String databaseCreate;
         String dataToInsert;
@@ -196,7 +193,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public ArrayList getMusicList(String table){
         ArrayList<String> musicList = new ArrayList<String>();
-        String sql = "SELECT Video_NAME FROM "+table;
+        String sql = "SELECT Video_NAME, Video_ID FROM "+table+" ORDER BY Video_NAME";
         Cursor c = getData(sql);
         c.moveToFirst();
 
@@ -211,7 +208,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public ArrayList getVideoIDList(String table)
     {
         ArrayList<String> musicIDs = new ArrayList<String>();
-        String sql = "SELECT Video_ID FROM "+table;
+        String sql = "SELECT Video_NAME, Video_ID FROM "+table+" ORDER BY Video_NAME";
         Cursor c = getData(sql);
         c.moveToFirst();
 
@@ -270,9 +267,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public String suggestMusic(){
         Random rnd = new Random();
         String musicIdToSuggest;
-        String[] musicList = new String[10];
+        String[] musicList = new String[20];
         int i = 0;
-        String sql = "SELECT Video_NAME FROM "+TABLE_CLIENT+" ORDER BY SentCount DESC LIMIT 10";
+        String sql = "SELECT Video_NAME FROM "+TABLE_CLIENT+" ORDER BY SentCount DESC LIMIT 20";
         Cursor c = getData(sql);
         c.moveToFirst();
         while(!c.isAfterLast()) {
@@ -281,7 +278,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             i++;
         }
         c.close();
-        musicIdToSuggest=musicList[rnd.nextInt(10)];
+        musicIdToSuggest=musicList[rnd.nextInt(20)];
 
         return musicIdToSuggest;
     }

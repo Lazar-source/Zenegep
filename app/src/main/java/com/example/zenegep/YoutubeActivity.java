@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.FontRequest;
 import android.util.Log;
 import android.util.Pair;
 import android.widget.Button;
@@ -34,9 +35,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import static com.example.zenegep.ServerActivity.*;
 
@@ -44,7 +48,7 @@ public class YoutubeActivity extends YouTubeBaseActivity
 implements YouTubePlayer.OnInitializedListener {
     private static String GOOGLE_API_KEY = "AIzaSyBNk8C_vUyaMjIvPb6RnekVZ2i6p0xEz7c";
     private static String YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ";
-    public static TextView info, infoip, msg;
+    public static TextView infoip, msg;
     private YouTubePlayer youTubePlayer;
     private YouTubePlayerView youTubePlayerView;
     public static String[] Music = new String[255];
@@ -53,6 +57,13 @@ implements YouTubePlayer.OnInitializedListener {
     public static Set<String> ipAddresses = new HashSet<String>();
     private static final String TAG = "MyActivity";
     private static final String TABLE_NAME = DatabaseHelper.TABLE_SERVER;
+    public static Map<String, Integer> playList = new HashMap<String, Integer>();
+
+
+    @Override
+    public void onBackPressed(){//le van tiltva a back gomb megnyomása a szervernél, kilépés gombbal lehet csak kilépni
+        }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +71,6 @@ implements YouTubePlayer.OnInitializedListener {
         setContentView(R.layout.activity_youtube);
         youTubePlayerView = findViewById(R.id.youtube_player);
         youTubePlayerView.initialize(GOOGLE_API_KEY, this);
-        info = findViewById(R.id.info);
         infoip = findViewById(R.id.infoip);
         msg = findViewById(R.id.msg);
         infoip.setText(getIpAddress());
@@ -92,7 +102,7 @@ implements YouTubePlayer.OnInitializedListener {
                     InetAddress inetAddress = enumInetAddress.nextElement();
 
                     if (inetAddress.isSiteLocalAddress()) {
-                        ip += "SiteLocalAddress: "
+                        ip += "A szerver az alábbi címen érhető el: "
                                 + inetAddress.getHostAddress() + "\n";
                     }
                 }
@@ -154,11 +164,15 @@ implements YouTubePlayer.OnInitializedListener {
 
         @Override
         public void onVideoEnded() {
-            Toast.makeText(YoutubeActivity.this, "Thanks for watching!", Toast.LENGTH_LONG).show();
-            //TODO inicializálni ezt a fosást, hogy egy if-el tudjuk ellenőrizni van-e beküldött zene
-            YOUTUBE_VIDEO_ID = Music[count];
-            count--;
-            youTubePlayer.cueVideo(YOUTUBE_VIDEO_ID);
+            //Toast.makeText(YoutubeActivity.this, "Thanks for watching!", Toast.LENGTH_LONG).show();
+            if(count>0){
+                    YOUTUBE_VIDEO_ID = getNextMusic();
+                    count--;
+                    youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
+            }
+            else{
+                Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
@@ -170,9 +184,29 @@ implements YouTubePlayer.OnInitializedListener {
         Toast.makeText(this, "Failed to Initialize Youtube Player", Toast.LENGTH_LONG).show();
     }
 
+    public String getNextMusic(){
+        String musicToPlay;
+        ArrayList<String> musicList = new ArrayList<>();
+        ArrayList<Integer> prioList = new ArrayList<>();
+
+        for (String i : playList.keySet()){
+            musicList.add(i);
+            prioList.add(playList.get(i));
+        }
+        int max = 0;
+        for (int i =0;i<prioList.size();i++)
+            if (prioList.get(0)<prioList.get(i))
+                max=i;
+
+        musicToPlay=musicList.get(max);
+        playList.remove(musicToPlay);
+        return musicToPlay;
+    }
+
     static class ServerinBackground extends Activity {
         String message = "";
         String reply;
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -195,15 +229,15 @@ implements YouTubePlayer.OnInitializedListener {
                 DataOutputStream dataOutputStream = null;
                 try {
                     serverSocket = new ServerSocket(SocketServerPORT);
+                    /* ez nem kell
                     ServerinBackground.this.runOnUiThread(new Runnable() {
-
                         @Override
                         public void run() {
                             info.setText("I'm waiting here: "
                                     + serverSocket.getLocalPort());
                         }
                     });
-
+                      */
                     while (true) {
                         socket = serverSocket.accept();
                         dataInputStream = new DataInputStream(
@@ -218,36 +252,17 @@ implements YouTubePlayer.OnInitializedListener {
                         message=messageFromClient;
 
                         if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)) {
-                            boolean tartalmaz = false;
-                            int index = 0;
-                            for (int i = 0; i < count && !tartalmaz; i++) {
-                                if (message.equals(Music[i])) {
-                                    tartalmaz = true;
-                                    index = i;
-                                }
+                            if (playList.containsKey(message)){
+                                int sentCount = playList.get(message);
+                                playList.remove(message);
+                                playList.put(message,sentCount+1);
                             }
-
-                            if (!tartalmaz) {
-
-                                Music[count] = message;
-                                Prio[count]++;
-                                dh.updateSql(TABLE_NAME, Music[count]);
+                            else{
+                                playList.put(message,1);
+                                dh.updateSql(TABLE_NAME,message);
                                 count++;
-                            } else {
-                                Prio[index]++;
-                                for (int i = 0; i < count; i++) {
-                                    if (Prio[i] < Prio[i + 1]) {
-                                        int temp;
-                                        String stemp;
-                                        temp = Prio[i];
-                                        stemp = Music[i];
-                                        Prio[i] = Prio[i + 1];
-                                        Music[i] = Music[i + 1];
-                                        Music[i + 1] = stemp;
-                                        Prio[i + 1] = temp;
-                                    }
-                                }
                             }
+
                             reply="added";
                             dataOutputStream.writeUTF(reply);
                         }
