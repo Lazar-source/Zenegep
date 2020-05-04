@@ -5,9 +5,12 @@ package com.example.zenegep;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -25,11 +28,13 @@ import android.widget.Toast;
 import android.widget.ListView;
 
 public class ClientActivity extends Activity {
+    private static final String TABLE_NAME = DatabaseHelper.TABLE_CLIENT;
     TextView textResponse;
     EditText editTextAddress;
     Button buttonConnect;
     DatabaseHelper dh;
     public static String serverIp;
+    ArrayList<String> musicIdList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,7 @@ public class ClientActivity extends Activity {
         editTextAddress =  findViewById(R.id.address);
         buttonConnect =  findViewById(R.id.connect);
         textResponse =  findViewById(R.id.response);
+        musicIdList = dh.getVideoIDList(TABLE_NAME);
         buttonConnect.setOnClickListener(buttonConnectOnClickListener);
 
         }
@@ -62,11 +68,17 @@ public class ClientActivity extends Activity {
         int dstPort;
         String response = "";
         String msgToServer;
+        Map<String, Integer> playList = new HashMap<>();
 
         MyClientTask(String addr, int port, String msgTo) {
             dstAddress = addr;
             dstPort = port;
             msgToServer = msgTo;
+        }
+        MyClientTask(String addr, int port, Map playL) {
+            dstAddress = addr;
+            dstPort = port;
+            playList=playL;
         }
 
         @Override
@@ -75,54 +87,69 @@ public class ClientActivity extends Activity {
             Socket socket = null;
             DataOutputStream dataOutputStream = null;
             DataInputStream dataInputStream = null;
+            if(msgToServer!=null) {
+                try {
+                    socket = new Socket(dstAddress, dstPort);
+                    dataOutputStream = new DataOutputStream(
+                            socket.getOutputStream());
+                    dataInputStream = new DataInputStream(socket.getInputStream());
 
-            try {
-                socket = new Socket(dstAddress, dstPort);
-                dataOutputStream = new DataOutputStream(
-                        socket.getOutputStream());
-                dataInputStream = new DataInputStream(socket.getInputStream());
+                    if (msgToServer != null) {
+                        dataOutputStream.writeUTF(msgToServer);
+                    }
 
-                if(msgToServer != null){
-                    dataOutputStream.writeUTF(msgToServer);
-                }
-
-                response = dataInputStream.readUTF();
+                    response = dataInputStream.readUTF();
 
 
-            } catch (UnknownHostException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                response = "UnknownHostException: " + e.toString();
-            } catch (IOException e) {
+                } catch (UnknownHostException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    response = "UnknownHostException: " + e.toString();
+                } catch (IOException e) {
 
-                e.printStackTrace();
-                response = "IOException: " + e.toString();
-            }finally {
-                if (socket != null) {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
+                    e.printStackTrace();
+                    response = "IOException: " + e.toString();
+                } finally {
+                    if (socket != null) {
+                        try {
+                            socket.close();
+                        } catch (IOException e) {
 
-                        e.printStackTrace();
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (dataOutputStream != null) {
+                        try {
+                            dataOutputStream.close();
+                        } catch (IOException e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (dataInputStream != null) {
+                        try {
+                            dataInputStream.close();
+                        } catch (IOException e) {
+
+                            e.printStackTrace();
+                        }
                     }
                 }
+            }
+            else
+            {
 
-                if (dataOutputStream != null) {
-                    try {
-                        dataOutputStream.close();
-                    } catch (IOException e) {
+                try {
+                    dataOutputStream =new DataOutputStream(
+                            socket.getOutputStream());
 
-                        e.printStackTrace();
-                    }
-                }
 
-                if (dataInputStream != null) {
-                    try {
-                        dataInputStream.close();
-                    } catch (IOException e) {
-
-                        e.printStackTrace();
-                    }
+                final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
+                mapOutputStream.writeObject(musicIdList);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             return null;
@@ -132,6 +159,9 @@ public class ClientActivity extends Activity {
         protected void onPostExecute(Void result) {
             if (response.equals("connected")){
                 serverIp = dstAddress;
+                MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, playList);
+                myClientTask.execute();
+
                 Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
                 startActivity(intent);
             }

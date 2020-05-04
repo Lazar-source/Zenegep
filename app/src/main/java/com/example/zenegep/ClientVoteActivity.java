@@ -4,22 +4,55 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class ClientVoteActivity extends AppCompatActivity {
+    ListView musicListView;
+    static final String serverIp = ClientActivity.serverIp;
+    static public ArrayList<String> musicListID;
+    ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_vote);
+        myclientelinditas();
+        musicListView = findViewById(R.id.musicList);
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, musicListID);
+        musicListView.setAdapter(adapter);
+        musicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String mireKattintottal= musicListID.get(position);
+                String response="Torles:"+mireKattintottal;
+                //Toast.makeText(ClientMusicSelectActivity.this,""+mireKattintottálId,Toast.LENGTH_SHORT).show();
+                 MyClientTask myClientTask = new MyClientTask(serverIp, 8080,response);
+                myClientTask.execute();
+            }
+        });
+
+
+        }
+
+    public void myclientelinditas()
+    {
+        MyClientTask myClientTask = new MyClientTask(serverIp, 8080, "szavazas");
+        myClientTask.execute();
 
     }
+
+
+
 
 
 
@@ -35,71 +68,48 @@ public class ClientVoteActivity extends AppCompatActivity {
             msgToServer = msgTo;
         }
 
-        @Override
-        protected Void doInBackground(Void... arg0) {
-
+        public ArrayList getMusicList() {
             Socket socket = null;
-            DataOutputStream dataOutputStream = null;
+            ArrayList<String> musicList = new ArrayList<String>();
             DataInputStream dataInputStream = null;
-
+            boolean End = false;
             try {
-                socket = new Socket(dstAddress, dstPort);
-                dataOutputStream = new DataOutputStream(
-                        socket.getOutputStream());
-                dataInputStream = new DataInputStream(socket.getInputStream());
-
-                if(msgToServer != null){
-                    dataOutputStream.writeUTF(msgToServer);
+                while (!End) {
+                    socket = new Socket(dstAddress, dstPort);
+                    dataInputStream = new DataInputStream(socket.getInputStream());
+                    response = dataInputStream.readUTF();
+                    if (response.equals("End")) {
+                        End = true;
+                    } else {
+                        ClientVoteActivity.musicListID.add(response);
+                    }
                 }
-
-                response = dataInputStream.readUTF();
 
 
             } catch (UnknownHostException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-                response = "UnknownHostException: " + e.toString();
             } catch (IOException e) {
-
                 e.printStackTrace();
-                response = "IOException: " + e.toString();
-            }finally {
-                if (socket != null) {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
+            }
+            return musicList;
+        }
 
-                        e.printStackTrace();
-                    }
-                }
 
-                if (dataOutputStream != null) {
-                    try {
-                        dataOutputStream.close();
-                    } catch (IOException e) {
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            try {
+                    ClientVoteActivity.musicListID = getMusicList();
 
-                        e.printStackTrace();
-                    }
-                }
 
-                if (dataInputStream != null) {
-                    try {
-                        dataInputStream.close();
-                    } catch (IOException e) {
 
-                        e.printStackTrace();
-                    }
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return null;
         }
-
-        @Override
-        protected void onPostExecute(Void result) {
-
-
-            super.onPostExecute(result);
-        }
-
     }
 }
+
+
+
+

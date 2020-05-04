@@ -32,6 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db=this.getWritableDatabase();
     }
 
+
     private boolean checkIfTableExists(SQLiteDatabase db, String table){
         String check = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='"+table+"'";
         Cursor c = db.rawQuery(check, null);

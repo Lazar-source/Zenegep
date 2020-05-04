@@ -41,7 +41,7 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
         suggestedMusic = findViewById(R.id.suggestedMusic);
         adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,musicList);
         musicListView.setAdapter(adapter);
-        suggestedMusic.setText(dh.suggestMusic());
+       // suggestedMusic.setText(dh.suggestMusic());
 
         musicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -97,8 +97,8 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
                 if(msgToServer != null){
                     dataOutputStream.writeUTF(msgToServer);
                 }
-
                 response = dataInputStream.readUTF();
+
 
 
             } catch (UnknownHostException e) {

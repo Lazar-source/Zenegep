@@ -30,6 +30,7 @@ import android.view.View;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -59,11 +60,14 @@ implements YouTubePlayer.OnInitializedListener {
     private static final String TAG = "MyActivity";
     private static final String TABLE_NAME = DatabaseHelper.TABLE_SERVER;
     public static Map<String, Integer> playList = new HashMap<String, Integer>();
+    public static Map<String,Integer> szavazoList=new HashMap<>();
+    public static Map<String,Boolean> szavazokliensek=new HashMap<>();
     public static ArrayAdapter adapter;
     public static ArrayList<String> musicOnPlaylist = new ArrayList<>();
     public static ArrayList<String> musicList = new ArrayList<>();
     public static ArrayList<String> musicIDList = new ArrayList<>();
-
+    public static ClientClassActivity CA[]=new ClientClassActivity[100];
+    public static int Clientcount=0;
     @Override
     public void onBackPressed(){//le van tiltva a back gomb megnyomása a szervernél, kilépés gombbal lehet csak kilépni
         }
@@ -275,13 +279,47 @@ implements YouTubePlayer.OnInitializedListener {
                         message=messageFromClient;
 
                         if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)) {
+                            ipAddresses.add(socket.getInetAddress().toString());
                             if (playList.containsKey(message)){
-                                int sentCount = playList.get(message);
-                                playList.remove(message);
-                                playList.put(message,sentCount+1);
+
+                                for(int i=0;i<Clientcount;i++)
+                                {
+                                    if(CA[i].getIP_cim().equals(socket.getInetAddress().toString()))
+                                    {
+                                        if(!CA[i].AlreadyBekuldottzenek(message)) {
+                                            CA[i].addBekuldottzenek(message);
+                                            int sentCount = playList.get(message);
+                                            playList.remove(message);
+                                            playList.put(message,sentCount+1);
+                                            reply="added";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        reply="Not added";
+                                    }
+                                }
                             }
                             else{
                                 playList.put(message,1);
+                                szavazoList.put(message,0);
+                                for(int i=0;i<Clientcount;i++)
+                                {
+                                    if(CA[i].getIP_cim().equals(socket.getInetAddress().toString()))
+                                    {
+                                        if(!CA[i].AlreadyBekuldottzenek(message)) {
+                                            CA[i].addBekuldottzenek(message);
+                                            int sentCount = playList.get(message);
+                                            playList.remove(message);
+                                            playList.put(message,sentCount+1);
+                                            reply="added";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        reply="Not added";
+                                    }
+                                }
                                 dh.updateSql(TABLE_NAME,message);
                                 count++;
 
@@ -295,21 +333,77 @@ implements YouTubePlayer.OnInitializedListener {
                                 });
 
                             }
-
-                            reply="added";
                             dataOutputStream.writeUTF(reply);
                         }
                         else if (message.equals("connect")){
-                            ipAddresses.add(socket.getInetAddress().toString());
-                            //Log.d("Teszt",ipAddresses.toString());
+                            CA[Clientcount]=new ClientClassActivity(socket.getInetAddress().toString());
                             reply = "connected";
                             dataOutputStream.writeUTF(reply);
                         }
-                        //TODO: szavazós rendszer, de én ezt nem tudom hogyan lehetne megvalósítani
-                        // Activity meg layout megvan hozzá
+                        else if(message.equals("szavazas"))
+                        {
+                            for (String s : playList.keySet()) {
+                                reply=s;
+                                dataOutputStream.writeUTF(reply);
+                            }
+                            reply="End";
+                            dataOutputStream.writeUTF(reply);
+
+                        }
+                        else if(message.contains("Torles"))
+                        {
+                            double Client_count=ipAddresses.size();
+                            int index=message.indexOf(":");
+                            String msg=message.substring((index+1));
+                            int db=0;
+                            for (int i=0;i<Clientcount;i++){
+                               if (CA[i].getIP_cim().equals(ipAddresses.add(socket.getInetAddress().toString())))
+                               {
+                                   double sentCount = szavazoList.get(message);
+                                   if(!CA[i].AlreadyTorlendozenek(message))
+                                   {
+                                       CA[i].addTorlendozenek(message);
+                                       szavazoList.remove(message);
+                                       szavazoList.put(message, (int) (sentCount+1));
+
+                                   }
+
+
+                                   if(sentCount>(Client_count/2))
+                                   {
+                                        playList.remove(message);
+                                        szavazoList.remove(message);
+                                        for(int j=0;j<Clientcount;j++)
+                                        {
+                                            CA[j].DeleteZene(message);
+                                        }
+
+                                   }
+                               }
+                            }
+                        }
+                        else
+                        {
+                            ObjectInputStream mapInputStream = new ObjectInputStream(dataInputStream);
+                            Map<String, Integer> yourMap = (Map) mapInputStream.readObject();
+                            for(int i=0;i<Clientcount;i++)
+                            {
+                                if(CA[i].getIP_cim().equals( ipAddresses.add(socket.getInetAddress().toString())))
+                                {
+                                    CA[i].setStatisticMap(yourMap);
+                                }
+                            }
+                        }
+
+
+
+
+
+
+
 
                     }
-                } catch (IOException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                     final String errMsg = e.toString();
                     ServerinBackground.this.runOnUiThread(new Runnable() {
