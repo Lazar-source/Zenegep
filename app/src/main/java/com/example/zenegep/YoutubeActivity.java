@@ -56,7 +56,7 @@ implements YouTubePlayer.OnInitializedListener {
     private YouTubePlayer youTubePlayer;
     private YouTubePlayerView youTubePlayerView;
     public static ListView playListView;
-    public static int count = 0;
+
     public static Set<String> ipAddresses = new HashSet<String>();
     private static final String TAG = "MyActivity";
     private static final String TABLE_NAME = DatabaseHelper.TABLE_SERVER;
@@ -357,7 +357,7 @@ implements YouTubePlayer.OnInitializedListener {
                                     }
                                 }
                                 dh.updateSql(TABLE_NAME,message);
-                                count++;
+
 
                                 ServerinBackground.this.runOnUiThread(new Runnable() {
                                     @Override
