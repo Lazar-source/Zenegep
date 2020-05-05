@@ -67,10 +67,10 @@ public class ClientActivity extends Activity {
                 Toast.makeText(ClientActivity.this, "No Welcome Msg sent", Toast.LENGTH_SHORT).show();
             }
 */
-            MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, "connect");
+            MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, "connect",musicIdMap);
             myClientTask.execute();
-             myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, musicIdMap);
-            myClientTask.execute();
+             MyClientTask myClientTask2= new MyClientTask(editTextAddress.getText().toString(), 8080,null, musicIdMap);
+            myClientTask2.execute();
         }
     };
 
@@ -78,20 +78,18 @@ public class ClientActivity extends Activity {
         String dstAddress;
         int dstPort;
         String response = "";
-        String msgToServer=null;
-        Boolean markuldtuk=false;
+        String msgToServer;
         Map<String, Integer> playList = new HashMap<>();
 
 
-        MyClientTask(String addr, int port, String msgTo) {
+
+
+
+        public MyClientTask(String addr, int port, String msgTo, Map<String, Integer> map) {
             dstAddress = addr;
             dstPort = port;
             msgToServer = msgTo;
-        }
-        MyClientTask(String addr, int port, Map playL) {
-            dstAddress = addr;
-            dstPort = port;
-            playList=playL;
+            playList=map;
         }
 
         @Override
@@ -100,7 +98,7 @@ public class ClientActivity extends Activity {
             Socket socket = null;
             DataOutputStream dataOutputStream = null;
             DataInputStream dataInputStream = null;
-            if(!msgToServer.equals(null)) {
+            if(msgToServer != null) {
                 try {
                     socket = new Socket(dstAddress, dstPort);
                     dataOutputStream = new DataOutputStream(
@@ -160,7 +158,7 @@ public class ClientActivity extends Activity {
                             socket.getOutputStream());
                     dataOutputStream.writeUTF("object");
                     dataInputStream = new DataInputStream(socket.getInputStream());
-                    final Map<String, Integer> yourMap =musicIdMap;
+                    final Map<String, Integer> yourMap =playList;
                 final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
                 mapOutputStream.writeObject(yourMap);
 
