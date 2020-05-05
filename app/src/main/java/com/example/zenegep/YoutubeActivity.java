@@ -416,7 +416,7 @@ implements YouTubePlayer.OnInitializedListener {
                             }
 
                             reply=SuggestedMusic();
-                            if(reply!="") {
+                            if(!reply.equals("")) {
                                 dataOutputStream.writeUTF(reply);
                             }
                             else
