@@ -147,7 +147,7 @@ public class ClientActivity extends Activity {
                     dataOutputStream =new DataOutputStream(
                             socket.getOutputStream());
                     dataOutputStream.writeUTF("object");
-
+                    dataInputStream = new DataInputStream(socket.getInputStream());
 
                 final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
                 mapOutputStream.writeObject(musicIdList);

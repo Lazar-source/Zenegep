@@ -419,7 +419,7 @@ implements YouTubePlayer.OnInitializedListener {
                         else if(message.contains("object"))
                         {
                             ObjectInputStream mapInputStream = new ObjectInputStream(dataInputStream);
-                            Map<String, Integer> yourMap = (Map) mapInputStream.readObject();
+                            Map yourMap = (Map) mapInputStream.readObject();
                             for(int i=0;i<Clientcount;i++)
                             {
                                 if(CA[i].getIP_cim().equals( ipAddresses.add(socket.getInetAddress().toString())))
