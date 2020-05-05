@@ -405,6 +405,7 @@ implements YouTubePlayer.OnInitializedListener {
                         }
                         else if(message.contains("object"))
                         {
+                            String valasz="";
 
                             final ObjectInputStream mapInputStream = new ObjectInputStream(dataInputStream);
                             @SuppressWarnings("unchecked")
@@ -417,16 +418,15 @@ implements YouTubePlayer.OnInitializedListener {
                                     CA[i].setStatisticMap(yourMap);
                                 }
                             }
-
-                            reply=SuggestedMusic();
+                            valasz=SuggestedMusic();
                             Log.d("itt vagyunk","most");
                             if(dh.isInDatabase(reply,TABLE_NAME)) {
-                                dataOutputStream.writeUTF(reply);
+                                dataOutputStream.writeUTF(valasz);
                             }
                             else
                             {
-                                reply="dQw4w9WgXcQ";
-                                dataOutputStream.writeUTF(reply);
+                                valasz="dQw4w9WgXcQ";
+                                dataOutputStream.writeUTF(valasz);
                             }
 
                         }

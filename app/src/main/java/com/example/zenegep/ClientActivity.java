@@ -76,6 +76,7 @@ public class ClientActivity extends Activity {
         int dstPort;
         String response = "";
         String msgToServer;
+        Boolean markuldtuk=false;
         Map<String, Integer> playList = new HashMap<>();
 
         MyClientTask(String addr, int port, String msgTo) {
@@ -203,8 +204,11 @@ public class ClientActivity extends Activity {
             Log.d("akarmi",response);
             if (response.equals("connected")){
                 serverIp = dstAddress;
-                MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, playList);
-                myClientTask.execute();
+                if(!markuldtuk) {
+                    MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, playList);
+                    myClientTask.execute();
+                    markuldtuk=true;
+                }
 
 
             }
