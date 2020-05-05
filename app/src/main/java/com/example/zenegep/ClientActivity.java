@@ -143,6 +143,7 @@ public class ClientActivity extends Activity {
             {
 
                 try {
+                    socket = new Socket(dstAddress, dstPort);
                     dataOutputStream =new DataOutputStream(
                             socket.getOutputStream());
                     dataOutputStream.writeUTF("object");
