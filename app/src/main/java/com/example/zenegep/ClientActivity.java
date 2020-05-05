@@ -150,7 +150,6 @@ public class ClientActivity extends Activity {
             }
             else
             {
-
                 try {
                     socket = new Socket(dstAddress, dstPort);
                     dataOutputStream =new DataOutputStream(
@@ -192,8 +191,7 @@ public class ClientActivity extends Activity {
                             e.printStackTrace();
                         }
                     }
-                    Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
-                    startActivity(intent);
+
                 }
             }
             return null;
@@ -201,7 +199,6 @@ public class ClientActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
-            Log.d("akarmi",response);
             if (response.equals("connected")){
                 serverIp = dstAddress;
                 if(!markuldtuk) {
@@ -210,8 +207,12 @@ public class ClientActivity extends Activity {
                     markuldtuk=true;
                 }
 
-
             }
+            else if(dh.isInDatabase(response,TABLE_NAME)) {
+                Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
+                startActivity(intent);
+            }
+
             else {
                 response = "Sikertelen csatlakozás!";
                 textResponse.setText(response);
