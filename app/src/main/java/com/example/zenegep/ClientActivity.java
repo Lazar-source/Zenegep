@@ -53,7 +53,7 @@ public class ClientActivity extends Activity {
         buttonConnect.setOnClickListener(buttonConnectOnClickListener);
         for(int i=0;i<musicIdList.size();i++)
         {
-            musicIdMap.put(musicIdList.get(0),musicSentList.get(0));
+            musicIdMap.put(musicIdList.get(i),musicSentList.get(i));
         }
 
         }
@@ -69,7 +69,7 @@ public class ClientActivity extends Activity {
 */
             MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, "connect",musicIdMap);
             myClientTask.execute();
-             MyClientTask myClientTask2= new MyClientTask(editTextAddress.getText().toString(), 8080,null, musicIdMap);
+            MyClientTask myClientTask2= new MyClientTask(editTextAddress.getText().toString(), 8080,null, musicIdMap);
             myClientTask2.execute();
         }
     };
@@ -79,11 +79,7 @@ public class ClientActivity extends Activity {
         int dstPort;
         String response = "";
         String msgToServer;
-        Map<String, Integer> playList = new HashMap<>();
-
-
-
-
+        Map<String, Integer> playList;
 
         public MyClientTask(String addr, int port, String msgTo, Map<String, Integer> map) {
             dstAddress = addr;
@@ -202,15 +198,11 @@ public class ClientActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
-            Log.d("ad",response);
             if (response.equals("connected")){
-                Log.d("nagy a@","om");
                 serverIp=dstAddress;
             }
 
            else if(dh.isInDatabase(response,TABLE_NAME)) {
-
-
                 Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
                 startActivity(intent);
             }

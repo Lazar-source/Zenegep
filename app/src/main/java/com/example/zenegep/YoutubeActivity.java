@@ -116,10 +116,6 @@ implements YouTubePlayer.OnInitializedListener {
                     }
                 }
                 playLList.remove(statmusicList[i]);
-
-
-
-
             }
             String musicIdToSuggest=statmusicList[rnd.nextInt(20)];
             return musicIdToSuggest;
@@ -215,10 +211,6 @@ implements YouTubePlayer.OnInitializedListener {
                     else{
                         Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
                     }
-
-
-               //
-
         }
 
         @Override
@@ -403,8 +395,7 @@ implements YouTubePlayer.OnInitializedListener {
                                 }
                             }
                             valasz=SuggestedMusic();
-                            Log.d("itt vagyunk","most");
-                            if(dh.isInDatabase(reply,TABLE_NAME)) {
+                            if(dh.isInDatabase(valasz,TABLE_NAME)) {
                                 dataOutputStream.writeUTF(valasz);
                             }
                             else
