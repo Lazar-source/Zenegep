@@ -326,7 +326,7 @@ implements YouTubePlayer.OnInitializedListener {
                             else{
                                 playList.put(message,1);
                                 szavazoList.put(message,0);
-                                for(int i=0;i<Clientcount;i++)
+                               /* for(int i=0;i<Clientcount;i++)
                                 {
                                     if(CA[i].getIP_cim().equals(socket.getInetAddress().toString()))
                                     {
@@ -348,7 +348,7 @@ implements YouTubePlayer.OnInitializedListener {
                                         reply="anyád";
                                     }
 
-                                }
+                                }*/
                                 dh.updateSql(TABLE_NAME,message);
 
 
