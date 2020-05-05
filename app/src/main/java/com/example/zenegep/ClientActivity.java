@@ -204,12 +204,12 @@ public class ClientActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
-           /* if (response.equals("connected")){
+            if (response.equals("connected")){
 
 
-            }*/
+            }
 
-           if(dh.isInDatabase(response,TABLE_NAME)) {
+           else if(dh.isInDatabase(response,TABLE_NAME)) {
                super.onPostExecute(result);
 
                 Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
