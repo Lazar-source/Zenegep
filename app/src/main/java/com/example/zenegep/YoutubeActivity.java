@@ -302,11 +302,11 @@ implements YouTubePlayer.OnInitializedListener {
                         message=messageFromClient;
 
                         if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)) {
-                            boolean kuldott=false;
+
                             //ipAddresses.add(socket.getInetAddress().toString());
                             if (playList.containsKey(message)){
 
-                                for(int i=0;i<Clientcount&&!kuldott;i++)
+                                for(int i=0;i<Clientcount;i++)
                                 {
                                     if(CA[i].getIP_cim().equals(socket.getInetAddress().toString()))
                                     {
