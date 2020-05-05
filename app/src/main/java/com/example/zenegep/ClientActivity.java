@@ -56,7 +56,7 @@ public class ClientActivity extends Activity {
             musicIdMap.put(musicIdList.get(i),musicSentList.get(i));
         }
 
-        }
+    }
 
     OnClickListener buttonConnectOnClickListener = new OnClickListener() {
         @Override
@@ -155,11 +155,11 @@ public class ClientActivity extends Activity {
                     dataOutputStream.writeUTF("object");
                     dataInputStream = new DataInputStream(socket.getInputStream());
                     final Map<String, Integer> yourMap =playList;
-                final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
-                mapOutputStream.writeObject(yourMap);
+                    final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
+                    mapOutputStream.writeObject(yourMap);
 
-                response = dataInputStream.readUTF();
-                suggestedmusic=response;
+                    response = dataInputStream.readUTF();
+                    suggestedmusic=response;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -202,13 +202,13 @@ public class ClientActivity extends Activity {
                 serverIp=dstAddress;
             }
 
-           else if(dh.isInDatabase(response,TABLE_NAME)) {
+            else if(dh.isInDatabase(response,TABLE_NAME)) {
                 Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
                 startActivity(intent);
             }
 
             else {
-               super.onPostExecute(result);
+                super.onPostExecute(result);
                 response = "Sikertelen csatlakozás!";
             }
             super.onPostExecute(result);

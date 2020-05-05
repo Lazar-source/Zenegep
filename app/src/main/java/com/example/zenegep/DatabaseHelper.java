@@ -301,4 +301,15 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         ArrayList<String> idList = getVideoIDList(table);
         return idList.contains(musicId);
     }
+
+    public String getMusicNameByID(String musicID, String table){
+        String music="aaaaa";
+        ArrayList<String> musList=getMusicList(table);
+        ArrayList<String> musIdList = getVideoIDList(table);
+        for (int i =0;i<musList.size();i++)
+            if (musIdList.get(i).equals(musicID))
+                music=musList.get(i);
+
+        return music;
+    }
 }

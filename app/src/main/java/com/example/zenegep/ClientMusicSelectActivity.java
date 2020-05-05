@@ -28,6 +28,7 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
     static final  String serverIp= ClientActivity.serverIp;
     private final static String TABLE_NAME = DatabaseHelper.TABLE_CLIENT;
     DatabaseHelper dh;
+    String musicToSuggest = ClientActivity.suggestedmusic;
     TextView suggestedMusic;
 
     @Override
@@ -41,7 +42,7 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
         suggestedMusic = findViewById(R.id.suggestedMusic);
         adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,musicList);
         musicListView.setAdapter(adapter);
-        suggestedMusic.setText(ClientActivity.suggestedmusic);
+        suggestedMusic.setText(dh.getMusicNameByID(musicToSuggest,TABLE_NAME));
 
         musicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -152,4 +153,3 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
     }
 
 }
-
