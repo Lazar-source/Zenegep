@@ -41,7 +41,7 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
         suggestedMusic = findViewById(R.id.suggestedMusic);
         adapter= new ArrayAdapter(this,android.R.layout.simple_list_item_1,musicList);
         musicListView.setAdapter(adapter);
-       // suggestedMusic.setText(dh.suggestMusic());
+        suggestedMusic.setText(ClientActivity.suggestedmusic);
 
         musicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

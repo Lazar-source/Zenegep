@@ -35,6 +35,7 @@ public class ClientActivity extends Activity {
     DatabaseHelper dh;
     public static String serverIp;
     ArrayList<String> musicIdList;
+    public static String suggestedmusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,10 +145,15 @@ public class ClientActivity extends Activity {
                 try {
                     dataOutputStream =new DataOutputStream(
                             socket.getOutputStream());
+                    dataOutputStream.writeUTF("object");
 
 
                 final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
                 mapOutputStream.writeObject(musicIdList);
+
+                response = dataInputStream.readUTF();
+                suggestedmusic=response;
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

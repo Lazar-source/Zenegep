@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -59,9 +60,9 @@ implements YouTubePlayer.OnInitializedListener {
     public static Set<String> ipAddresses = new HashSet<String>();
     private static final String TAG = "MyActivity";
     private static final String TABLE_NAME = DatabaseHelper.TABLE_SERVER;
-    public static Map<String, Integer> playList = new HashMap<String, Integer>();
+    public static Map<String, Integer> playList = new HashMap<>();
     public static Map<String,Integer> szavazoList=new HashMap<>();
-    public static Map<String,Boolean> szavazokliensek=new HashMap<>();
+
     public static ArrayAdapter adapter;
     public static ArrayList<String> musicOnPlaylist = new ArrayList<>();
     public static ArrayList<String> musicList = new ArrayList<>();
@@ -88,9 +89,6 @@ implements YouTubePlayer.OnInitializedListener {
         musicIDList = dh.getVideoIDList(TABLE_NAME);
         musicList = dh.getMusicList(TABLE_NAME);
         playListView = findViewById(R.id.actualPlayList);
-
-
-        //TODO EZT A GOMBOT ÉRTELMES HELYRE RAKNI
         Button kilepes = findViewById(R.id.szerver_kilepes);
         kilepes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +100,46 @@ implements YouTubePlayer.OnInitializedListener {
     }
 
 
+    public static String SuggestedMusic()
+        {
+             Map<String, Integer> playLList;
+            Map<String, Integer> statList;
+            playLList=CA[0].getStatisticMap();
+            String[] statmusicList = new String[20];
+            for(int i=1;i<Clientcount;i++)
+            {
+                statList=CA[i].getStatisticMap();
+                    for(String s:playLList.keySet())
+                    {
+                        int sentCount = playLList.get(s);
+                        playList.remove(s);
+                        playList.put(s,(statList.get(s)+sentCount));
 
+                    }
+            }
+            int max=0;
+            Random rnd = new Random();
+            for(int i=0;i<20;i++)
+            {
+                max=0;
+                for(String s:playLList.keySet()) {
+
+                    if(max<playLList.get(s))
+                    {
+                        max=playLList.get(s);
+                        statmusicList[i]=s;
+                    }
+                }
+                playLList.remove(statmusicList[i]);
+
+
+
+
+            }
+
+            String musicIdToSuggest=statmusicList[rnd.nextInt(20)];
+            return musicIdToSuggest;
+        }
     public void StartServerThread(Context context){
         ServerinBackground sb = new ServerinBackground();
         ServerinBackground.SocketServerThread st = sb.new SocketServerThread(context);
@@ -382,7 +419,7 @@ implements YouTubePlayer.OnInitializedListener {
                                }
                             }
                         }
-                        else
+                        else if(message.contains("object"))
                         {
                             ObjectInputStream mapInputStream = new ObjectInputStream(dataInputStream);
                             Map<String, Integer> yourMap = (Map) mapInputStream.readObject();
@@ -393,6 +430,9 @@ implements YouTubePlayer.OnInitializedListener {
                                     CA[i].setStatisticMap(yourMap);
                                 }
                             }
+                            reply=SuggestedMusic();
+                            dataOutputStream.writeUTF(reply);
+
                         }
 
 
