@@ -68,7 +68,7 @@ public class ClientClassActivity {
         return statisticMap;
     }
 
-    public  void setStatisticMap(Map<String, Integer> statisticMap) {
+    public  void setStatisticMap(Map<String,Integer> statisticMap) {
         ClientClassActivity.statisticMap = statisticMap;
     }
 }

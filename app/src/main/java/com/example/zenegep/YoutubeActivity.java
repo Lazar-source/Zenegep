@@ -2,28 +2,17 @@ package com.example.zenegep;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.provider.FontRequest;
-import android.util.Log;
-import android.util.Pair;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 
@@ -40,13 +29,9 @@ import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeMap;
-
-import static com.example.zenegep.ServerActivity.*;
 
 public class YoutubeActivity extends YouTubeBaseActivity
 implements YouTubePlayer.OnInitializedListener {
@@ -61,7 +46,7 @@ implements YouTubePlayer.OnInitializedListener {
     private static final String TABLE_NAME = DatabaseHelper.TABLE_SERVER;
     public static Map<String, Integer> playList = new HashMap<>();
     public static Map<String,Integer> szavazoList=new HashMap<>();
-    public static ArrayAdapter adapter;
+    public static ArrayAdapter<String> adapter;
     public static ArrayList<String> musicOnPlaylist = new ArrayList<>();
     public static ArrayList<String> musicList = new ArrayList<>();
     public static ArrayList<String> musicIDList = new ArrayList<>();
@@ -270,7 +255,7 @@ implements YouTubePlayer.OnInitializedListener {
                     index =i;
             musicOnPlaylist.add(musicList.get(index));
         }
-        adapter = new ArrayAdapter(context,android.R.layout.simple_list_item_1,musicOnPlaylist);
+        adapter = new ArrayAdapter<>(context,android.R.layout.simple_list_item_1,musicOnPlaylist);
         playListView.setAdapter(adapter);
     }
 
@@ -386,12 +371,12 @@ implements YouTubePlayer.OnInitializedListener {
                         }
                         else if(message.contains("Torles"))
                         {
-                            double Client_count=ipAddresses.size();
+                            double Client_count=Clientcount;
                             int index=message.indexOf(":");
                             String msg=message.substring((index+1));
                             int db=0;
                             for (int i=0;i<Clientcount;i++){
-                               if (CA[i].getIP_cim().equals(ipAddresses.add(socket.getInetAddress().toString())))
+                               if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString())))
                                {
                                    double sentCount = szavazoList.get(message);
                                    if(!CA[i].AlreadyTorlendozenek(message))
@@ -418,11 +403,14 @@ implements YouTubePlayer.OnInitializedListener {
                         }
                         else if(message.contains("object"))
                         {
-                            ObjectInputStream mapInputStream = new ObjectInputStream(dataInputStream);
-                            Map yourMap = (Map) mapInputStream.readObject();
+
+                            final ObjectInputStream mapInputStream = new ObjectInputStream(dataInputStream);
+                            @SuppressWarnings("unchecked")
+                            final Map<String, Integer> yourMap= (Map<String,Integer>) mapInputStream.readObject();;
+
                             for(int i=0;i<Clientcount;i++)
                             {
-                                if(CA[i].getIP_cim().equals( ipAddresses.add(socket.getInetAddress().toString())))
+                                if(CA[i].getIP_cim().equals( socket.getInetAddress().toString()))
                                 {
                                     CA[i].setStatisticMap(yourMap);
                                 }

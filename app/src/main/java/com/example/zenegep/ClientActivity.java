@@ -155,9 +155,9 @@ public class ClientActivity extends Activity {
                             socket.getOutputStream());
                     dataOutputStream.writeUTF("object");
                     dataInputStream = new DataInputStream(socket.getInputStream());
-
+                    final Map<String, Integer> yourMap =musicIdMap;
                 final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
-                mapOutputStream.writeObject(musicIdMap);
+                mapOutputStream.writeObject(yourMap);
 
                 response = dataInputStream.readUTF();
                 suggestedmusic=response;
