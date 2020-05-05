@@ -95,8 +95,8 @@ implements YouTubePlayer.OnInitializedListener {
                     for(String s:playLList.keySet())
                     {
                         int sentCount = playLList.get(s);
-                        playList.remove(s);
-                        playList.put(s,(statList.get(s)+sentCount));
+                        playLList.remove(s);
+                        playLList.put(s,(statList.get(s)+sentCount));
 
                     }
             }
@@ -119,7 +119,6 @@ implements YouTubePlayer.OnInitializedListener {
 
 
             }
-
             String musicIdToSuggest=statmusicList[rnd.nextInt(20)];
             return musicIdToSuggest;
         }
@@ -261,7 +260,7 @@ implements YouTubePlayer.OnInitializedListener {
 
     static class ServerinBackground extends Activity {
         String message = "";
-        String reply;
+        String reply="valami";
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
