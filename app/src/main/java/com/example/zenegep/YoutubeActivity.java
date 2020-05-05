@@ -210,6 +210,7 @@ implements YouTubePlayer.OnInitializedListener {
                     if (count>0) {
                         YOUTUBE_VIDEO_ID = getNextMusic();
                         youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
+                        count--;
                     }
 
 
