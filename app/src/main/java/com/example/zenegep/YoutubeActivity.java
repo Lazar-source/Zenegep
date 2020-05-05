@@ -414,8 +414,16 @@ implements YouTubePlayer.OnInitializedListener {
                                     CA[i].setStatisticMap(yourMap);
                                 }
                             }
+
                             reply=SuggestedMusic();
-                            dataOutputStream.writeUTF(reply);
+                            if(reply!="") {
+                                dataOutputStream.writeUTF(reply);
+                            }
+                            else
+                            {
+                                reply="dQw4w9WgXcQ";
+                                dataOutputStream.writeUTF(reply);
+                            }
 
                         }
 
