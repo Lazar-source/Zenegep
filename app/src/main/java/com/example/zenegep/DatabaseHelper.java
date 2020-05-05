@@ -221,6 +221,19 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         c.close();
         return musicIDs;
     }
+    public ArrayList getVideoSentCount(String table)
+    {
+        ArrayList<Integer> musicSentcount = new ArrayList<Integer>();
+        String sql = "SELECT Video_NAME, SentCount FROM "+table+" ORDER BY Video_NAME";
+        Cursor c = getData(sql);
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            musicSentcount.add(c.getInt(c.getColumnIndex("SentCount")));
+            c.moveToNext();
+        }
+        c.close();
+        return musicSentcount;
+    }
 
     public ArrayList getAllTimePopularList(String table){
         ArrayList<String> list = new ArrayList<String>();

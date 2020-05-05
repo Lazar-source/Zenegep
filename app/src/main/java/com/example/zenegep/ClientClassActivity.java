@@ -34,12 +34,28 @@ public class ClientClassActivity {
     }
     public Boolean AlreadyBekuldottzenek(String videoID)
     {
-        return bekuldottzenek.containsKey(videoID);
+        boolean already=false;
+        for(String s: bekuldottzenek.keySet())
+        {
+            if (s.equals(videoID))
+            {
+                already=bekuldottzenek.get(s);
+            }
+        }
+        return already;
 
     }
     public Boolean AlreadyTorlendozenek(String videoID)
     {
-        return torlendozenek.containsKey(videoID);
+        boolean already=false;
+        for(String s: torlendozenek.keySet())
+        {
+            if (s.equals(videoID))
+            {
+                already=torlendozenek.get(s);
+            }
+        }
+        return already;
 
     }
     public void DeleteZene(String videoID)

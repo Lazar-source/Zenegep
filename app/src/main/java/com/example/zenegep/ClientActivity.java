@@ -35,7 +35,9 @@ public class ClientActivity extends Activity {
     DatabaseHelper dh;
     public static String serverIp;
     ArrayList<String> musicIdList;
+    ArrayList<Integer> musicSentList;
     public static String suggestedmusic;
+    public static Map<String,Integer> musicIdMap=new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,12 @@ public class ClientActivity extends Activity {
         buttonConnect =  findViewById(R.id.connect);
         textResponse =  findViewById(R.id.response);
         musicIdList = dh.getVideoIDList(TABLE_NAME);
+        musicSentList=dh.getVideoSentCount(TABLE_NAME);
         buttonConnect.setOnClickListener(buttonConnectOnClickListener);
+        for(int i=0;i<musicIdList.size();i++)
+        {
+            musicIdMap.put(musicIdList.get(0),musicSentList.get(0));
+        }
 
         }
 
@@ -150,7 +157,7 @@ public class ClientActivity extends Activity {
                     dataInputStream = new DataInputStream(socket.getInputStream());
 
                 final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
-                mapOutputStream.writeObject(musicIdList);
+                mapOutputStream.writeObject(musicIdMap);
 
                 response = dataInputStream.readUTF();
                 suggestedmusic=response;
