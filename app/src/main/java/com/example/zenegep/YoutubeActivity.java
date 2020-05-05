@@ -223,15 +223,14 @@ implements YouTubePlayer.OnInitializedListener {
         @Override
         public void onVideoEnded() {
             //Toast.makeText(YoutubeActivity.this, "Thanks for watching!", Toast.LENGTH_LONG).show();
-            if(count>0){
+
                     YOUTUBE_VIDEO_ID = getNextMusic();
-                    count--;
                     youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
 
-            }
-            else{
-                Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
-            }
+
+
+               // Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
+
         }
 
         @Override
