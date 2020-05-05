@@ -338,6 +338,7 @@ implements YouTubePlayer.OnInitializedListener {
                                             playList.remove(message);
                                             playList.put(message,sentCount+1);
                                             reply="added";
+                                            count++;
                                         }
                                         else
                                         {
