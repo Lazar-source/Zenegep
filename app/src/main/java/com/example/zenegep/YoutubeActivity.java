@@ -53,6 +53,7 @@ implements YouTubePlayer.OnInitializedListener {
     public static ArrayList<String> musicIDList = new ArrayList<>();
     public static ClientClassActivity CA[]=new ClientClassActivity[100];
     public static int Clientcount=0;
+    public static int count=0;
     @Override
     public void onBackPressed(){//le van tiltva a back gomb megnyomása a szervernél, kilépés gombbal lehet csak kilépni
         }
@@ -206,9 +207,10 @@ implements YouTubePlayer.OnInitializedListener {
         @Override
         public void onVideoEnded() {
             //Toast.makeText(YoutubeActivity.this, "Thanks for watching!", Toast.LENGTH_LONG).show();
-
-                    YOUTUBE_VIDEO_ID = getNextMusic();
-                    youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
+                    if (count>0) {
+                        YOUTUBE_VIDEO_ID = getNextMusic();
+                        youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
+                    }
 
 
 
@@ -300,10 +302,11 @@ implements YouTubePlayer.OnInitializedListener {
                         message=messageFromClient;
 
                         if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)) {
-                            ipAddresses.add(socket.getInetAddress().toString());
+                            boolean kuldott=false;
+                            //ipAddresses.add(socket.getInetAddress().toString());
                             if (playList.containsKey(message)){
 
-                                for(int i=0;i<Clientcount;i++)
+                                for(int i=0;i<Clientcount&&!kuldott;i++)
                                 {
                                     if(CA[i].getIP_cim().equals(socket.getInetAddress().toString()))
                                     {
@@ -315,10 +318,10 @@ implements YouTubePlayer.OnInitializedListener {
                                             reply="added";
 
                                         }
-                                    }
-                                    else
-                                    {
-                                        reply="Not added";
+                                        else
+                                        {
+                                            reply="Már bekuldte a zenét!";
+                                        }
                                     }
                                 }
                             }
@@ -336,11 +339,12 @@ implements YouTubePlayer.OnInitializedListener {
                                             playList.put(message,sentCount+1);
                                             reply="added";
                                         }
+                                        else
+                                        {
+                                            reply="Not added";
+                                        }
                                     }
-                                    else
-                                    {
-                                        reply="Not added";
-                                    }
+
                                 }
                                 dh.updateSql(TABLE_NAME,message);
 
@@ -381,23 +385,23 @@ implements YouTubePlayer.OnInitializedListener {
                             for (int i=0;i<Clientcount;i++){
                                if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString())))
                                {
-                                   double sentCount = szavazoList.get(message);
-                                   if(!CA[i].AlreadyTorlendozenek(message))
+                                   double sentCount = szavazoList.get(msg);
+                                   if(!CA[i].AlreadyTorlendozenek(msg))
                                    {
-                                       CA[i].addTorlendozenek(message);
-                                       szavazoList.remove(message);
-                                       szavazoList.put(message, (int) (sentCount+1));
+                                       CA[i].addTorlendozenek(msg);
+                                       szavazoList.remove(msg);
+                                       szavazoList.put(msg, (int) (sentCount+1));
 
                                    }
 
 
                                    if(sentCount>(Client_count/2))
                                    {
-                                        playList.remove(message);
-                                        szavazoList.remove(message);
+                                        playList.remove(msg);
+                                        szavazoList.remove(msg);
                                         for(int j=0;j<Clientcount;j++)
                                         {
-                                            CA[j].DeleteZene(message);
+                                            CA[j].DeleteZene(msg);
                                         }
 
                                    }
