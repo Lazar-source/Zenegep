@@ -284,12 +284,14 @@ implements YouTubePlayer.OnInitializedListener {
                 try {
                     serverSocket = new ServerSocket(SocketServerPORT);
                     while (true) {
+
                         socket = serverSocket.accept();
                         dataInputStream = new DataInputStream(
                                 socket.getInputStream());
+
                         dataOutputStream = new DataOutputStream(
                                 socket.getOutputStream());
-
+                        dataOutputStream.flush();
                         String messageFromClient = "";
 
                         //If no message sent from client, this code will block the program
