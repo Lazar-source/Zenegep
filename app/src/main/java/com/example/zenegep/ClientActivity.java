@@ -69,7 +69,7 @@ public class ClientActivity extends Activity {
 */
             MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, "connect");
             myClientTask.execute();
-             myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, playList);
+             myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, musicIdMap);
             myClientTask.execute();
         }
     };
@@ -167,7 +167,8 @@ public class ClientActivity extends Activity {
                 suggestedmusic=response;
                 } catch (IOException e) {
                     e.printStackTrace();
-                }finally {
+                }
+                finally {
                     if (socket != null) {
                         try {
                             socket.close();
@@ -202,20 +203,24 @@ public class ClientActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
-            if (response.equals("connected")){
+           /* if (response.equals("connected")){
 
 
-            }
-            else if(dh.isInDatabase(response,TABLE_NAME)) {
+            }*/
+
+           if(dh.isInDatabase(response,TABLE_NAME)) {
+               super.onPostExecute(result);
+
                 Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
                 startActivity(intent);
             }
 
             else {
+               super.onPostExecute(result);
                 response = "Sikertelen csatlakozás!";
                 textResponse.setText(response);
             }
-            super.onPostExecute(result);
+
         }
 
     }
