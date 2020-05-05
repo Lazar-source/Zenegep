@@ -45,8 +45,8 @@ public class ClientMenuActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyClientTask myClientTask = new ClientMenuActivity.MyClientTask(serverIP,8080,"vote");
-                myClientTask.execute();
+                Intent intent= new Intent(getApplicationContext(), ClientVoteActivity.class);
+                startActivity(intent);
 
             }
         });
