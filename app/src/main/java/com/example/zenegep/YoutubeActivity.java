@@ -306,24 +306,22 @@ implements YouTubePlayer.OnInitializedListener {
                             //ipAddresses.add(socket.getInetAddress().toString());
                             if (playList.containsKey(message)){
 
-                                for(int i=0;i<Clientcount;i++)
-                                {
-                                    if(CA[i].getIP_cim().equals(socket.getInetAddress().toString()))
-                                    {
-                                        if(!CA[i].AlreadyBekuldottzenek(message)) {
+                                for(int i=0;i<Clientcount;i++) {
+                                    if (CA[i].getIP_cim().equals(socket.getInetAddress().toString())) {
+                                        if (!CA[i].AlreadyBekuldottzenek(message)) {
                                             CA[i].addBekuldottzenek(message);
                                             int sentCount = playList.get(message);
                                             playList.remove(message);
-                                            playList.put(message,sentCount+1);
-                                            reply="added";
+                                            playList.put(message, sentCount + 1);
+                                            reply = "added";
 
                                         }
-                                        else
-                                        {
-                                            reply="Már bekuldte a zenét!";
+                                        else {
+                                            reply = "Már bekuldte a zenét!";
                                         }
                                     }
                                 }
+
                             }
                             else{
                                 playList.put(message,1);
@@ -345,6 +343,10 @@ implements YouTubePlayer.OnInitializedListener {
                                             reply="Not added";
                                         }
                                     }
+                                    else
+                                    {
+                                        reply="anyád";
+                                    }
 
                                 }
                                 dh.updateSql(TABLE_NAME,message);
@@ -365,6 +367,7 @@ implements YouTubePlayer.OnInitializedListener {
                         else if (message.equals("connect")){
                             CA[Clientcount]=new ClientClassActivity(socket.getInetAddress().toString());
                             reply = "connected";
+                            Clientcount++;
                             dataOutputStream.writeUTF(reply);
                         }
                         else if(message.equals("szavazas"))
