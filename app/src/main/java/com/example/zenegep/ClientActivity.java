@@ -144,6 +144,7 @@ public class ClientActivity extends Activity {
                             e.printStackTrace();
                         }
                     }
+
                 }
             }
             else
@@ -163,6 +164,35 @@ public class ClientActivity extends Activity {
                 suggestedmusic=response;
                 } catch (IOException e) {
                     e.printStackTrace();
+                }finally {
+                    if (socket != null) {
+                        try {
+                            socket.close();
+                        } catch (IOException e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (dataOutputStream != null) {
+                        try {
+                            dataOutputStream.close();
+                        } catch (IOException e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (dataInputStream != null) {
+                        try {
+                            dataInputStream.close();
+                        } catch (IOException e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+                    Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
+                    startActivity(intent);
                 }
             }
             return null;
@@ -176,8 +206,7 @@ public class ClientActivity extends Activity {
                 MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, playList);
                 myClientTask.execute();
 
-                Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
-                startActivity(intent);
+
             }
             else {
                 response = "Sikertelen csatlakozás!";
