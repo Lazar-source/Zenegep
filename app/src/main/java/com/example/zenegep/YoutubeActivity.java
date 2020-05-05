@@ -345,9 +345,8 @@ implements YouTubePlayer.OnInitializedListener {
                             {
                                 arrayList.add(s);
                             }
-                            final ArrayList<String> yourarrayList2 =arrayList;
                             final ObjectOutputStream ArrayOutputStream = new ObjectOutputStream(dataOutputStream);
-                            ArrayOutputStream.writeObject(yourarrayList2);
+                            ArrayOutputStream.writeObject(arrayList);
 
 
                         }
