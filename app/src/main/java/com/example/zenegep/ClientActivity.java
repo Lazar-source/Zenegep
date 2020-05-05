@@ -78,7 +78,7 @@ public class ClientActivity extends Activity {
         String dstAddress;
         int dstPort;
         String response = "";
-        String msgToServer="";
+        String msgToServer=null;
         Boolean markuldtuk=false;
         Map<String, Integer> playList = new HashMap<>();
 
@@ -100,7 +100,7 @@ public class ClientActivity extends Activity {
             Socket socket = null;
             DataOutputStream dataOutputStream = null;
             DataInputStream dataInputStream = null;
-            if(msgToServer!=null) {
+            if(!msgToServer.equals(null)) {
                 try {
                     socket = new Socket(dstAddress, dstPort);
                     dataOutputStream = new DataOutputStream(
