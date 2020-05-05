@@ -278,24 +278,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         Query(updateSql);
     }
 
-    public String suggestMusic(){
-        Random rnd = new Random();
-        String musicIdToSuggest;
-        String[] musicList = new String[20];
-        int i = 0;
-        String sql = "SELECT Video_NAME FROM "+TABLE_CLIENT+" ORDER BY SentCount DESC LIMIT 20";
-        Cursor c = getData(sql);
-        c.moveToFirst();
-        while(!c.isAfterLast()) {
-            musicList[i] = c.getString(c.getColumnIndex("Video_NAME"));
-            c.moveToNext();
-            i++;
-        }
-        c.close();
-        musicIdToSuggest=musicList[rnd.nextInt(20)];
-
-        return musicIdToSuggest;
-    }
 
     public boolean isInDatabase(String musicId, String table){
         ArrayList<String> idList = getVideoIDList(table);

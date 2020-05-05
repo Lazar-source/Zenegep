@@ -253,6 +253,8 @@ implements YouTubePlayer.OnInitializedListener {
                     index =i;
             musicOnPlaylist.add(musicList.get(index));
         }
+        if (musicOnPlaylist.isEmpty())
+            txtactual.setText("Nincs megjelenítendő zene a lejátszási listában!");
         adapter = new ArrayAdapter<>(context,android.R.layout.simple_list_item_1,musicOnPlaylist);
         playListView.setAdapter(adapter);
     }
@@ -340,11 +342,7 @@ implements YouTubePlayer.OnInitializedListener {
                         }
                         else if(message.equals("szavazas"))
                         {
-                            ArrayList<String> arrayList=new ArrayList<>();
-                            for(String s :playList.keySet())
-                            {
-                                arrayList.add(s);
-                            }
+                            ArrayList<String> arrayList = new ArrayList<>(playList.keySet());
                             final ObjectOutputStream ArrayOutputStream = new ObjectOutputStream(dataOutputStream);
                             ArrayOutputStream.writeObject(arrayList);
 
@@ -359,6 +357,8 @@ implements YouTubePlayer.OnInitializedListener {
                                 for (int i = 0; i < Clientcount; i++) {
                                     if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString()))) {
                                         double sentCount = szavazoList.get(msg);
+                                        String out="";
+                                        out+=sentCount;
                                         if (!CA[i].AlreadyTorlendozenek(msg)) {
                                             CA[i].addTorlendozenek(msg);
                                             szavazoList.remove(msg);
@@ -371,17 +371,25 @@ implements YouTubePlayer.OnInitializedListener {
                                         }
 
 
-                                        if ((sentCount+1) > (Client_count / 2)) {
+                                        if ((sentCount+1) > (Client_count / 2) ) {
                                             playList.remove(msg);
                                             szavazoList.remove(msg);
+                                            count--;
                                             for (int j = 0; j < Clientcount; j++) {
                                                 CA[j].DeleteZene(msg);
                                             }
                                             reply="deleted";
+                                            ServerinBackground.this.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    refreshPlayList(context);
+                                                }
+                                            });
 
                                         }
                                     }
                                 }
+                                dataOutputStream.writeUTF(reply);
                             }
                             else
                             {
@@ -393,14 +401,21 @@ implements YouTubePlayer.OnInitializedListener {
                                     {
                                         CA[i].addTorlendozenek(msg);
 
-                                        if (1 > (Client_count / 2)) {
+                                        if ((sentCount+1) > (Client_count / 2)) {
                                             playList.remove(msg);
                                             szavazoList.remove(msg);
+                                            count--;
                                             for (int j = 0; j < Clientcount; j++) {
                                                 CA[j].DeleteZene(msg);
                                             }
                                             reply="deleted";
-
+                                            dataOutputStream.writeUTF(reply);
+                                            ServerinBackground.this.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    refreshPlayList(context);
+                                                }
+                                            });
                                         }
                                     }
 
