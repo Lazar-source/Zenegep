@@ -161,7 +161,6 @@ public class ClientActivity extends Activity {
 
                 response = dataInputStream.readUTF();
                 suggestedmusic=response;
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -171,6 +170,7 @@ public class ClientActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
+            Log.d("akarmi",response);
             if (response.equals("connected")){
                 serverIp = dstAddress;
                 MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, playList);

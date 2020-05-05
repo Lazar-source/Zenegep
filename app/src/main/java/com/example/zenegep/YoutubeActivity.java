@@ -3,6 +3,7 @@ package com.example.zenegep;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -418,7 +419,8 @@ implements YouTubePlayer.OnInitializedListener {
                             }
 
                             reply=SuggestedMusic();
-                            if(!reply.equals("")) {
+                            Log.d("itt vagyunk","most");
+                            if(dh.isInDatabase(reply,TABLE_NAME)) {
                                 dataOutputStream.writeUTF(reply);
                             }
                             else
@@ -430,7 +432,7 @@ implements YouTubePlayer.OnInitializedListener {
                         }
 
 
-
+                        dataOutputStream.flush();
 
 
 
