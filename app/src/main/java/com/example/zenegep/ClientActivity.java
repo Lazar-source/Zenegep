@@ -36,6 +36,7 @@ public class ClientActivity extends Activity {
     public static String serverIp;
     ArrayList<String> musicIdList;
     ArrayList<Integer> musicSentList;
+    Map<String, Integer> playList = new HashMap<>();
     public static String suggestedmusic;
     public static Map<String,Integer> musicIdMap=new HashMap<>();
 
@@ -68,6 +69,8 @@ public class ClientActivity extends Activity {
 */
             MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, "connect");
             myClientTask.execute();
+             myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, playList);
+            myClientTask.execute();
         }
     };
 
@@ -77,7 +80,7 @@ public class ClientActivity extends Activity {
         String response = "";
         String msgToServer;
         Boolean markuldtuk=false;
-        Map<String, Integer> playList = new HashMap<>();
+
 
         MyClientTask(String addr, int port, String msgTo) {
             dstAddress = addr;
@@ -200,12 +203,7 @@ public class ClientActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             if (response.equals("connected")){
-                serverIp = dstAddress;
-                if(!markuldtuk) {
-                    MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, playList);
-                    myClientTask.execute();
-                    markuldtuk=true;
-                }
+
 
             }
             else if(dh.isInDatabase(response,TABLE_NAME)) {
