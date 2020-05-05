@@ -8,14 +8,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class ClientVoteActivity extends AppCompatActivity {
     ListView musicListView;
@@ -74,18 +77,47 @@ public class ClientVoteActivity extends AppCompatActivity {
             Socket socket = null;
             ArrayList<String> musicList = new ArrayList<String>();
             DataInputStream dataInputStream = null;
-            boolean End = false;
+            DataOutputStream dataOutputStream=null;
             try {
-                while (!End) {
-                    socket = new Socket(dstAddress, dstPort);
-                    dataInputStream = new DataInputStream(socket.getInputStream());
-                    response = dataInputStream.readUTF();
-                    if (response.equals("End")) {
-                        End = true;
-                    } else {
-                        musicList.add(response);
-                    }
-                }
+
+                socket = new Socket(dstAddress, dstPort);
+                dataInputStream = new DataInputStream(socket.getInputStream());
+                dataOutputStream=new DataOutputStream((socket.getOutputStream()));
+                dataOutputStream.writeUTF("szavazas");
+                final ObjectInputStream ArrayInputStream = new ObjectInputStream(dataInputStream);
+                @SuppressWarnings("unchecked")
+                final ArrayList<String> yourList=  (ArrayList<String>)ArrayInputStream.readObject();
+                musicListID=yourList;
+
+
+
+
+
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return musicList;
+        }
+        public void  SendTorles()
+        {
+            Socket socket = null;
+            DataInputStream dataInputStream = null;
+            DataOutputStream dataOutputStream;
+            String valasz;
+            try {
+
+
+                socket = new Socket(dstAddress, dstPort);
+                dataInputStream = new DataInputStream(socket.getInputStream());
+                dataOutputStream = new DataOutputStream((socket.getOutputStream()));
+                String kuldes="Torles:"+response;
+                dataOutputStream.writeUTF(kuldes);
+                valasz=dataInputStream.readUTF();
+
 
 
             } catch (UnknownHostException e) {
@@ -93,14 +125,21 @@ public class ClientVoteActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return musicList;
+
+
         }
 
 
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
+                if(msgToServer.equals("szavazas")) {
                     ClientVoteActivity.musicListID = getMusicList();
+                }
+                else if(msgToServer.contains("Torles:"))
+                {
+                    SendTorles();
+                }
 
 
 
@@ -108,6 +147,18 @@ public class ClientVoteActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            if (response.equals("added")){
+
+                Toast.makeText(ClientVoteActivity.this, "A zene törlési igénye hozzáadva!", Toast.LENGTH_LONG).show();
+            }
+            else if(response.equals("deleted"))
+            {
+                Toast.makeText(ClientVoteActivity.this, "A zene törölve!", Toast.LENGTH_LONG).show();
+            }
+            super.onPostExecute(result);
         }
     }
 }

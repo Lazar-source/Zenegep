@@ -21,6 +21,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -35,7 +36,7 @@ import java.util.Random;
 import java.util.Set;
 
 public class YoutubeActivity extends YouTubeBaseActivity
-        implements YouTubePlayer.OnInitializedListener {
+implements YouTubePlayer.OnInitializedListener {
     private static String GOOGLE_API_KEY = "AIzaSyBNk8C_vUyaMjIvPb6RnekVZ2i6p0xEz7c";
     private static String YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ";
     public static TextView infoip, msg, txtactual;
@@ -56,7 +57,7 @@ public class YoutubeActivity extends YouTubeBaseActivity
     public static int count=0;
     @Override
     public void onBackPressed(){//le van tiltva a back gomb megnyomása a szervernél, kilépés gombbal lehet csak kilépni
-    }
+        }
 
 
     @Override
@@ -86,40 +87,40 @@ public class YoutubeActivity extends YouTubeBaseActivity
 
 
     public static String SuggestedMusic()
-    {
-        Map<String, Integer> playLList;
-        Map<String, Integer> statList;
-        playLList=CA[0].getStatisticMap();
-        String[] statmusicList = new String[20];
-        for(int i=1;i<Clientcount;i++)
         {
-            statList=CA[i].getStatisticMap();
-            for(String s:playLList.keySet())
+             Map<String, Integer> playLList;
+            Map<String, Integer> statList;
+            playLList=CA[0].getStatisticMap();
+            String[] statmusicList = new String[20];
+            for(int i=1;i<Clientcount;i++)
             {
-                int sentCount = playLList.get(s);
-                playLList.remove(s);
-                playLList.put(s,(statList.get(s)+sentCount));
+                statList=CA[i].getStatisticMap();
+                    for(String s:playLList.keySet())
+                    {
+                        int sentCount = playLList.get(s);
+                        playLList.remove(s);
+                        playLList.put(s,(statList.get(s)+sentCount));
 
+                    }
             }
-        }
-        int max=0;
-        Random rnd = new Random();
-        for(int i=0;i<20;i++)
-        {
-            max=0;
-            for(String s:playLList.keySet()) {
+            int max=0;
+            Random rnd = new Random();
+            for(int i=0;i<20;i++)
+            {
+                max=0;
+                for(String s:playLList.keySet()) {
 
-                if(max<playLList.get(s))
-                {
-                    max=playLList.get(s);
-                    statmusicList[i]=s;
+                    if(max<playLList.get(s))
+                    {
+                        max=playLList.get(s);
+                        statmusicList[i]=s;
+                    }
                 }
+                playLList.remove(statmusicList[i]);
             }
-            playLList.remove(statmusicList[i]);
+            String musicIdToSuggest=statmusicList[rnd.nextInt(20)];
+            return musicIdToSuggest;
         }
-        String musicIdToSuggest=statmusicList[rnd.nextInt(20)];
-        return musicIdToSuggest;
-    }
     public void StartServerThread(Context context){
         ServerinBackground sb = new ServerinBackground();
         ServerinBackground.SocketServerThread st = sb.new SocketServerThread(context);
@@ -203,14 +204,14 @@ public class YoutubeActivity extends YouTubeBaseActivity
         @Override
         public void onVideoEnded() {
             //Toast.makeText(YoutubeActivity.this, "Thanks for watching!", Toast.LENGTH_LONG).show();
-            if (count>0) {
-                YOUTUBE_VIDEO_ID = getNextMusic();
-                youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
-                count--;
-            }
-            else{
-                Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
-            }
+                    if (count>0) {
+                        YOUTUBE_VIDEO_ID = getNextMusic();
+                        youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
+                        count--;
+                    }
+                    else{
+                        Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
+                    }
         }
 
         @Override
@@ -295,7 +296,7 @@ public class YoutubeActivity extends YouTubeBaseActivity
                         messageFromClient = dataInputStream.readUTF();
                         message=messageFromClient;
 
-                        if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)) {
+                        if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)&&!message.contains("Torles")) {
                             if (playList.containsKey(message)){
                                 for(int i=0;i<Clientcount;i++) {
                                     if (CA[i].getIP_cim().equals(socket.getInetAddress().toString())) {
@@ -339,10 +340,17 @@ public class YoutubeActivity extends YouTubeBaseActivity
                         }
                         else if(message.equals("szavazas"))
                         {
-                            for (String s : playList.keySet()) {
-                                reply=s;
-                                dataOutputStream.writeUTF(reply);
+                            ArrayList<String> yourList=new ArrayList<>();
+                            for(String s:playList.keySet())
+                            {
+                                yourList.add(s);
                             }
+
+                            final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
+                            mapOutputStream.writeObject(yourList);
+
+
+
                             reply="End";
                             dataOutputStream.writeUTF(reply);
 
@@ -352,32 +360,54 @@ public class YoutubeActivity extends YouTubeBaseActivity
                             double Client_count=Clientcount;
                             int index=message.indexOf(":");
                             String msg=message.substring((index+1));
-                            int db=0;
-                            for (int i=0;i<Clientcount;i++){
-                                if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString())))
-                                {
-                                    double sentCount = szavazoList.get(msg);
-                                    if(!CA[i].AlreadyTorlendozenek(msg))
-                                    {
-                                        CA[i].addTorlendozenek(msg);
-                                        szavazoList.remove(msg);
-                                        szavazoList.put(msg, (int) (sentCount+1));
 
-                                    }
+                            if(szavazoList.containsKey(msg)) {
+                                for (int i = 0; i < Clientcount; i++) {
+                                    if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString()))) {
 
+                                        double sentCount = szavazoList.get(msg);
+                                        if (!CA[i].AlreadyTorlendozenek(msg)) {
+                                            CA[i].addTorlendozenek(msg);
+                                            szavazoList.remove(msg);
+                                            szavazoList.put(msg, (int) (sentCount+1));
+                                            reply="added";
 
-                                    if(sentCount>(Client_count/2))
-                                    {
-                                        playList.remove(msg);
-                                        szavazoList.remove(msg);
-                                        for(int j=0;j<Clientcount;j++)
-                                        {
-                                            CA[j].DeleteZene(msg);
                                         }
+                                        if (sentCount > (Client_count / 2)) {
+                                            playList.remove(msg);
+                                            szavazoList.remove(msg);
+                                            for (int j = 0; j < Clientcount; j++) {
+                                                CA[j].DeleteZene(msg);
+                                                reply="deleted";
+                                            }
 
+                                        }
                                     }
                                 }
                             }
+                            else
+                            {
+
+                                szavazoList.put(msg,1);
+                                reply="added";
+                                double sentCount = szavazoList.get(msg);
+                                for (int i = 0; i < Clientcount; i++) {
+                                    if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString()))) {
+                                        CA[i].addTorlendozenek(msg);
+                                    }
+                                    }
+                                if (sentCount > (Client_count / 2)) {
+                                    playList.remove(msg);
+                                    szavazoList.remove(msg);
+                                    for (int j = 0; j < Clientcount; j++) {
+                                        CA[j].DeleteZene(msg);
+                                        reply="deleted";
+                                    }
+
+                                }
+
+                            }
+                            dataOutputStream.writeUTF(reply);
                         }
                         else if(message.contains("object"))
                         {
@@ -445,3 +475,8 @@ public class YoutubeActivity extends YouTubeBaseActivity
         }
     }
 }
+
+
+
+
+
