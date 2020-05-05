@@ -202,13 +202,14 @@ public class ClientActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
+            Log.d("ad",response);
             if (response.equals("connected")){
-
-
+                Log.d("nagy a@","om");
+                serverIp=dstAddress;
             }
 
            else if(dh.isInDatabase(response,TABLE_NAME)) {
-               super.onPostExecute(result);
+
 
                 Intent intent = new Intent(getApplicationContext(), ClientMenuActivity.class);
                 startActivity(intent);
@@ -217,9 +218,8 @@ public class ClientActivity extends Activity {
             else {
                super.onPostExecute(result);
                 response = "Sikertelen csatlakozás!";
-                textResponse.setText(response);
             }
-
+            super.onPostExecute(result);
         }
 
     }

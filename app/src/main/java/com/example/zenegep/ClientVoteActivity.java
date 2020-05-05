@@ -12,6 +12,7 @@ import android.widget.ListView;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class ClientVoteActivity extends AppCompatActivity {
     ListView musicListView;
     static final String serverIp = ClientActivity.serverIp;
-    static public ArrayList<String> musicListID;
+    static public ArrayList<String> musicListID = new ArrayList<>();
     ArrayAdapter adapter;
 
     @Override
@@ -68,6 +69,7 @@ public class ClientVoteActivity extends AppCompatActivity {
             msgToServer = msgTo;
         }
 
+
         public ArrayList getMusicList() {
             Socket socket = null;
             ArrayList<String> musicList = new ArrayList<String>();
@@ -81,7 +83,7 @@ public class ClientVoteActivity extends AppCompatActivity {
                     if (response.equals("End")) {
                         End = true;
                     } else {
-                        ClientVoteActivity.musicListID.add(response);
+                        musicList.add(response);
                     }
                 }
 

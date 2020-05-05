@@ -212,10 +212,12 @@ implements YouTubePlayer.OnInitializedListener {
                         youTubePlayer.loadVideo(YOUTUBE_VIDEO_ID);
                         count--;
                     }
+                    else{
+                        Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
+                    }
 
 
-
-               // Toast.makeText(YoutubeActivity.this,"Nincs lejátszandó zene a listában!",Toast.LENGTH_SHORT).show();
+               //
 
         }
 
@@ -295,7 +297,6 @@ implements YouTubePlayer.OnInitializedListener {
 
                         dataOutputStream = new DataOutputStream(
                                 socket.getOutputStream());
-                        dataOutputStream.flush();
                         String messageFromClient = "";
 
                         //If no message sent from client, this code will block the program
@@ -303,10 +304,7 @@ implements YouTubePlayer.OnInitializedListener {
                         message=messageFromClient;
 
                         if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)) {
-
-                            //ipAddresses.add(socket.getInetAddress().toString());
                             if (playList.containsKey(message)){
-
                                 for(int i=0;i<Clientcount;i++) {
                                     if (CA[i].getIP_cim().equals(socket.getInetAddress().toString())) {
                                         if (!CA[i].AlreadyBekuldottzenek(message)) {
@@ -315,55 +313,31 @@ implements YouTubePlayer.OnInitializedListener {
                                             playList.remove(message);
                                             playList.put(message, sentCount + 1);
                                             reply = "added";
-
+                                            dh.updateSql(TABLE_NAME,message);
                                         }
                                         else {
                                             reply = "Már bekuldte a zenét!";
                                         }
                                     }
                                 }
-
                             }
-                            else{
-                                playList.put(message,1);
-                                szavazoList.put(message,0);
-                               /* for(int i=0;i<Clientcount;i++)
-                                {
-                                    if(CA[i].getIP_cim().equals(socket.getInetAddress().toString()))
-                                    {
-                                        if(!CA[i].AlreadyBekuldottzenek(message)) {
-                                            CA[i].addBekuldottzenek(message);
-                                            int sentCount = playList.get(message);
-                                            playList.remove(message);
-                                            playList.put(message,sentCount+1);
-                                            reply="added";
-                                            count++;
-                                        }
-                                        else
-                                        {
-                                            reply="Not added";
-                                        }
-                                    }
-                                    else
-                                    {
-                                        reply="anyád";
-                                    }
-
-                                }*/
+                            else {
+                                playList.put(message, 1);
+                                szavazoList.put(message, 0);
+                                reply = "added";
+                                count++;
                                 dh.updateSql(TABLE_NAME,message);
-
-
-                                ServerinBackground.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        refreshPlayList(context);
-                                        infoip.setText("");
-                                        txtactual.setText("Jelenlegi zenék a lejátszási listában: ");
-                                    }
-                                });
-
                             }
+
                             dataOutputStream.writeUTF(reply);
+                            ServerinBackground.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    refreshPlayList(context);
+                                    infoip.setText("");
+                                    txtactual.setText("Jelenlegi zenék a lejátszási listában: ");
+                                }
+                            });
                         }
                         else if (message.equals("connect")){
                             CA[Clientcount]=new ClientClassActivity(socket.getInetAddress().toString());
@@ -440,13 +414,6 @@ implements YouTubePlayer.OnInitializedListener {
                             }
 
                         }
-
-
-                        dataOutputStream.flush();
-
-
-
-
 
                     }
                 } catch (IOException | ClassNotFoundException e) {

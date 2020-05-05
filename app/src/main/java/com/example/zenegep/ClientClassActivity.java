@@ -39,7 +39,7 @@ public class ClientClassActivity {
         {
             if (s.equals(videoID))
             {
-                already=bekuldottzenek.get(s);
+                already=true;
             }
         }
         return already;
