@@ -78,8 +78,9 @@ public class ClientActivity extends Activity {
         String dstAddress;
         int dstPort;
         String response = "";
-        String msgToServer;
+        String msgToServer="";
         Boolean markuldtuk=false;
+        Map<String, Integer> playList = new HashMap<>();
 
 
         MyClientTask(String addr, int port, String msgTo) {
