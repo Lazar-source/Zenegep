@@ -107,7 +107,6 @@ public class ClientVoteActivity extends AppCompatActivity {
             Socket socket = null;
             DataInputStream dataInputStream = null;
             DataOutputStream dataOutputStream;
-            String valasz;
             try {
 
 
@@ -116,7 +115,7 @@ public class ClientVoteActivity extends AppCompatActivity {
                 dataOutputStream = new DataOutputStream((socket.getOutputStream()));
                 String kuldes="Torles:"+response;
                 dataOutputStream.writeUTF(kuldes);
-                valasz=dataInputStream.readUTF();
+                response=dataInputStream.readUTF();
 
 
 

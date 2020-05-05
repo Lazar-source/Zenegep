@@ -296,7 +296,7 @@ implements YouTubePlayer.OnInitializedListener {
                         messageFromClient = dataInputStream.readUTF();
                         message=messageFromClient;
 
-                        if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)&&!message.contains("Torles")) {
+                        if (dh.isInDatabase(message,DatabaseHelper.TABLE_SERVER)) {
                             if (playList.containsKey(message)){
                                 for(int i=0;i<Clientcount;i++) {
                                     if (CA[i].getIP_cim().equals(socket.getInetAddress().toString())) {
@@ -340,19 +340,15 @@ implements YouTubePlayer.OnInitializedListener {
                         }
                         else if(message.equals("szavazas"))
                         {
-                            ArrayList<String> yourList=new ArrayList<>();
-                            for(String s:playList.keySet())
+                            ArrayList<String> arrayList=new ArrayList<>();
+                            for(String s :playList.keySet())
                             {
-                                yourList.add(s);
+                                arrayList.add(s);
                             }
+                            final ArrayList<String> yourarrayList2 =arrayList;
+                            final ObjectOutputStream ArrayOutputStream = new ObjectOutputStream(dataOutputStream);
+                            ArrayOutputStream.writeObject(yourarrayList2);
 
-                            final ObjectOutputStream mapOutputStream = new ObjectOutputStream(dataOutputStream);
-                            mapOutputStream.writeObject(yourList);
-
-
-
-                            reply="End";
-                            dataOutputStream.writeUTF(reply);
 
                         }
                         else if(message.contains("Torles"))
@@ -360,26 +356,29 @@ implements YouTubePlayer.OnInitializedListener {
                             double Client_count=Clientcount;
                             int index=message.indexOf(":");
                             String msg=message.substring((index+1));
-
                             if(szavazoList.containsKey(msg)) {
                                 for (int i = 0; i < Clientcount; i++) {
                                     if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString()))) {
-
                                         double sentCount = szavazoList.get(msg);
                                         if (!CA[i].AlreadyTorlendozenek(msg)) {
                                             CA[i].addTorlendozenek(msg);
                                             szavazoList.remove(msg);
-                                            szavazoList.put(msg, (int) (sentCount+1));
+                                            szavazoList.put(msg, (int) (sentCount + 1));
                                             reply="added";
-
                                         }
-                                        if (sentCount > (Client_count / 2)) {
+                                        else
+                                        {
+                                            reply="Already added";
+                                        }
+
+
+                                        if ((sentCount+1) > (Client_count / 2)) {
                                             playList.remove(msg);
                                             szavazoList.remove(msg);
                                             for (int j = 0; j < Clientcount; j++) {
                                                 CA[j].DeleteZene(msg);
-                                                reply="deleted";
                                             }
+                                            reply="deleted";
 
                                         }
                                     }
@@ -387,27 +386,27 @@ implements YouTubePlayer.OnInitializedListener {
                             }
                             else
                             {
-
                                 szavazoList.put(msg,1);
-                                reply="added";
                                 double sentCount = szavazoList.get(msg);
-                                for (int i = 0; i < Clientcount; i++) {
-                                    if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString()))) {
+                                for(int i=0;i<Clientcount;i++)
+                                {
+                                   if (CA[i].getIP_cim().equals((socket.getInetAddress().toString())))
+                                    {
                                         CA[i].addTorlendozenek(msg);
-                                    }
-                                    }
-                                if (sentCount > (Client_count / 2)) {
-                                    playList.remove(msg);
-                                    szavazoList.remove(msg);
-                                    for (int j = 0; j < Clientcount; j++) {
-                                        CA[j].DeleteZene(msg);
-                                        reply="deleted";
+
+                                        if (1 > (Client_count / 2)) {
+                                            playList.remove(msg);
+                                            szavazoList.remove(msg);
+                                            for (int j = 0; j < Clientcount; j++) {
+                                                CA[j].DeleteZene(msg);
+                                            }
+                                            reply="deleted";
+
+                                        }
                                     }
 
                                 }
-
                             }
-                            dataOutputStream.writeUTF(reply);
                         }
                         else if(message.contains("object"))
                         {
