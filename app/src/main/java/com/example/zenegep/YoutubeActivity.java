@@ -52,7 +52,7 @@ implements YouTubePlayer.OnInitializedListener {
     public static ArrayList<String> musicOnPlaylist = new ArrayList<>();
     public static ArrayList<String> musicList = new ArrayList<>();
     public static ArrayList<String> musicIDList = new ArrayList<>();
-    public static ClientClassActivity CA[]=new ClientClassActivity[100];
+    public static ClientClassActivity[] CA =new ClientClassActivity[100];
     public static int Clientcount=0;
     public static int count=0;
     @Override
@@ -118,8 +118,7 @@ implements YouTubePlayer.OnInitializedListener {
                 }
                 playLList.remove(statmusicList[i]);
             }
-            String musicIdToSuggest=statmusicList[rnd.nextInt(20)];
-            return musicIdToSuggest;
+            return statmusicList[rnd.nextInt(20)];
         }
     public void StartServerThread(Context context){
         ServerinBackground sb = new ServerinBackground();
@@ -345,8 +344,6 @@ implements YouTubePlayer.OnInitializedListener {
                             ArrayList<String> arrayList = new ArrayList<>(playList.keySet());
                             final ObjectOutputStream ArrayOutputStream = new ObjectOutputStream(dataOutputStream);
                             ArrayOutputStream.writeObject(arrayList);
-
-
                         }
                         else if(message.contains("Torles"))
                         {
@@ -437,7 +434,8 @@ implements YouTubePlayer.OnInitializedListener {
                                     CA[i].setStatisticMap(yourMap);
                                 }
                             }
-                            valasz=SuggestedMusic();
+                            //valasz=SuggestedMusic();
+                            valasz="dQw4w9WgXcQ";
                             if(dh.isInDatabase(valasz,TABLE_NAME)) {
                                 dataOutputStream.writeUTF(valasz);
                             }
