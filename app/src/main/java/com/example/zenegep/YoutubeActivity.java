@@ -3,7 +3,6 @@ package com.example.zenegep;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -30,21 +29,15 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 public class YoutubeActivity extends YouTubeBaseActivity
 implements YouTubePlayer.OnInitializedListener {
-    private static String GOOGLE_API_KEY = "AIzaSyBNk8C_vUyaMjIvPb6RnekVZ2i6p0xEz7c";
     private static String YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ";
     public static TextView infoip, msg, txtactual;
     private YouTubePlayer youTubePlayer;
-    private YouTubePlayerView youTubePlayerView;
     public static ListView playListView;
-    public static Set<String> ipAddresses = new HashSet<String>();
-    private static final String TAG = "MyActivity";
     private static final String TABLE_NAME = DatabaseHelper.TABLE_SERVER;
     public static Map<String, Integer> playList = new HashMap<>();
     public static Map<String,Integer> szavazoList=new HashMap<>();
@@ -56,16 +49,16 @@ implements YouTubePlayer.OnInitializedListener {
     public static int Clientcount=0;
     public static int count=0;
     @Override
-    public void onBackPressed(){//le van tiltva a back gomb megnyomása a szervernél, kilépés gombbal lehet csak kilépni
+    public void onBackPressed(){
         }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube);
         DatabaseHelper dh = new DatabaseHelper(this);
-        youTubePlayerView = findViewById(R.id.youtube_player);
+        YouTubePlayerView youTubePlayerView = findViewById(R.id.youtube_player);
+        String GOOGLE_API_KEY = "AIzaSyBNk8C_vUyaMjIvPb6RnekVZ2i6p0xEz7c";
         youTubePlayerView.initialize(GOOGLE_API_KEY, this);
         infoip = findViewById(R.id.infoip);
         msg = findViewById(R.id.msg);
@@ -354,8 +347,6 @@ implements YouTubePlayer.OnInitializedListener {
                                 for (int i = 0; i < Clientcount; i++) {
                                     if ((CA[i].getIP_cim()).equals((socket.getInetAddress().toString()))) {
                                         double sentCount = szavazoList.get(msg);
-                                        String out="";
-                                        out+=sentCount;
                                         if (!CA[i].AlreadyTorlendozenek(msg)) {
                                             CA[i].addTorlendozenek(msg);
                                             szavazoList.remove(msg);
@@ -434,8 +425,7 @@ implements YouTubePlayer.OnInitializedListener {
                                     CA[i].setStatisticMap(yourMap);
                                 }
                             }
-                            //valasz=SuggestedMusic();
-                            valasz="dQw4w9WgXcQ";
+                            valasz=SuggestedMusic();
                             if(dh.isInDatabase(valasz,TABLE_NAME)) {
                                 dataOutputStream.writeUTF(valasz);
                             }

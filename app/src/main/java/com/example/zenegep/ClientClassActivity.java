@@ -17,14 +17,6 @@ public class ClientClassActivity {
         return IP_cim;
     }
 
-    public  Map<String, Boolean> getBekuldottzenek() {
-        return bekuldottzenek;
-    }
-
-    public  Map<String, Boolean> getTorlendozenek() {
-        return torlendozenek;
-    }
-
     public  void addBekuldottzenek(String videoID) {
         bekuldottzenek.put(videoID,true);
     }

@@ -16,7 +16,6 @@
         <activity android:name=".ClientMenuActivity" />
         <activity android:name=".YoutubeActivity" />
         <activity android:name=".ClientActivity" />
-        <activity android:name=".ServerActivity" />
         <activity android:name=".StatisticsActivity" />
         <activity
             android:name=".MainActivity"

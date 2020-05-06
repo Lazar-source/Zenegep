@@ -16,16 +16,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ListView;
 
 public class ClientActivity extends Activity {
     private static final String TABLE_NAME = DatabaseHelper.TABLE_CLIENT;
@@ -36,7 +31,6 @@ public class ClientActivity extends Activity {
     public static String serverIp;
     ArrayList<String> musicIdList;
     ArrayList<Integer> musicSentList;
-    Map<String, Integer> playList = new HashMap<>();
     public static String suggestedmusic;
     public static Map<String,Integer> musicIdMap=new HashMap<>();
 
@@ -61,12 +55,6 @@ public class ClientActivity extends Activity {
     OnClickListener buttonConnectOnClickListener = new OnClickListener() {
         @Override
         public void onClick(View arg0) {
-            //String tMsg = welcomeMsg.getText().toString();
-            /*if(tMsg.equals("")){
-                tMsg = null;
-                Toast.makeText(ClientActivity.this, "No Welcome Msg sent", Toast.LENGTH_SHORT).show();
-            }
-*/
             MyClientTask myClientTask = new MyClientTask(editTextAddress.getText().toString(), 8080, "connect",musicIdMap);
             myClientTask.execute();
             MyClientTask myClientTask2= new MyClientTask(editTextAddress.getText().toString(), 8080,null, musicIdMap);
@@ -109,7 +97,6 @@ public class ClientActivity extends Activity {
 
 
                 } catch (UnknownHostException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                     response = "UnknownHostException: " + e.toString();
                 } catch (IOException e) {

@@ -1,14 +1,10 @@
 package com.example.zenegep;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME="Zenegep.db";
@@ -47,9 +43,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public void initDatabase(String table){
         SQLiteDatabase db = this.getWritableDatabase();
-        //TODO: ezt a két sort ne felejtsük el majd kikommentelni, mert igy mindig dropolja a tablet
-        //String dropdatabase="DROP TABLE IF EXISTS "+table;
-        //db.execSQL(dropdatabase);
 
         String databaseCreate;
         String dataToInsert;
@@ -61,7 +54,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                     "Timestamp TEXT DEFAULT '1970-01-01 00:00:00')";
 
             db.execSQL(databaseCreate);
-            //TODO: feltölteni a zenékkel, amit akarunk, hogy benne legyen
             dataToInsert = "INSERT INTO "+table+" (Video_ID, Video_NAME) VALUES" +
                     "('fJ9rUzIMcZQ', 'Queen - Bohemian Rhapsody')," +
                     "('NyOGIsds2C4','Yung Gravy, bbno$ - Whip A Tesla')," +

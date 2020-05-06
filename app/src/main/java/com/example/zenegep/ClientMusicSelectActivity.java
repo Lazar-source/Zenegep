@@ -2,10 +2,8 @@ package com.example.zenegep;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -48,7 +46,6 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String mireKattintottalId= musicIdList.get(position);
-                //Toast.makeText(ClientMusicSelectActivity.this,""+mireKattintottálId,Toast.LENGTH_SHORT).show();
                 MyClientTask myClientTask = new MyClientTask(serverIp, 8080,mireKattintottalId);
                 myClientTask.execute();
             }
@@ -63,7 +60,6 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
                         pos=i;
 
                 String item = musicIdList.get(pos);
-                //Toast.makeText(ClientMusicSelectActivity.this,""+item,Toast.LENGTH_SHORT).show();
                 MyClientTask myClientTask = new MyClientTask(serverIp,8080,item);
                 myClientTask.execute();
             }
@@ -103,7 +99,6 @@ public class ClientMusicSelectActivity extends AppCompatActivity {
 
 
             } catch (UnknownHostException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
                 response = "UnknownHostException: " + e.toString();
             } catch (IOException e) {
